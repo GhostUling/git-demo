@@ -5,7 +5,6 @@ import com.xtu.stream_game.entity.Player;
 import com.xtu.stream_game.entity.PlayerGame;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -21,5 +20,4 @@ public interface PlayerGameRepository extends JpaRepository<PlayerGame, Integer>
     
     // 按照游玩时长排序获取玩家的游戏
     List<PlayerGame> findByPlayerOrderByPlayTimeMinutesDesc(Player player);
-
 } 

@@ -65,15 +65,13 @@ public class DeveloperServiceImpl implements DeveloperService {
 
     @Override
     public Developer login(String username, String password) {
-        // 注意：我们目前的Developer实体中还没有username和password字段
-        // 这里先简单实现登录逻辑，之后需要扩展Developer实体
+        // 这部分实现需要等扩展Developer实体后完善
         return null;
     }
 
     @Override
     public List<Object[]> getDeveloperSalesSummary(int developerId) {
-        // 这个方法需要依赖Game和Transaction相关的信息
-        // 现在这些实体和仓库还没有完全实现，先返回空列表
+        // 这部分实现需要依赖其他功能，暂时返回空列表
         return new ArrayList<>();
     }
 } 
