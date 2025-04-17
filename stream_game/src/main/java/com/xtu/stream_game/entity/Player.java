@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
@@ -15,6 +16,8 @@ public class Player {
     private String password;
     private String email;
     private Date registrationTime;
+    private BigDecimal balance;
+    private String avatarUrl;
 
     // Getters and Setters
     public int getPlayerId() {
@@ -55,5 +58,21 @@ public class Player {
 
     public void setRegistrationTime(Date registrationTime) {
         this.registrationTime = registrationTime;
+    }
+    
+    public BigDecimal getBalance() {
+        return balance;
+    }
+
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 }    

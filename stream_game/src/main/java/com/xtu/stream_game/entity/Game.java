@@ -17,6 +17,7 @@ public class Game {
     private BigDecimal price;
     private String description;
     private String installPackagePath;
+    private String gameType;
 
     // 新增属性，关联 Developer 类
     @ManyToOne
@@ -70,5 +71,13 @@ public class Game {
 
     public void setDeveloper(Developer developer) {
         this.developer = developer;
+    }
+
+    public String getGameType() {
+        return gameType;
+    }
+
+    public void setGameType(String gameType) {
+        this.gameType = gameType;
     }
 }    
