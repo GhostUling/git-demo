@@ -1,0 +1,112 @@
+<!-- 文件结构 -->
+<!--
+project/
+├── index.html
+├── about.html
+├── cart.html
+├── game-detail.html
+├── login.html
+└── assets/
+    ├── css/
+    │   └── style.css
+    ├── js/
+    │   └── main.js
+    └── images/
+-->
+
+<!-- CSS 文件 (assets/css/style.css) -->
+/* 基础样式 */
+
+
+
+<!-- 主页 index.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商城 - Stream</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="index.html" class="logo">Stream</a>
+            <div class="nav-links">
+                <a href="index.html" >商城</a><!--class="active"-->
+                <a href="cart.html">购物车 <span class="cart-counter">3</span></a>
+                <a href="about.html">关于</a>
+                <a href="login.html">登录/注册</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="game-grid">
+            <!-- 游戏卡片1 -->
+            <div class="game-card">
+                <a href="game1.html">
+                    <img src="game1.jpg" class="game-image" alt="Cyber Adventure">
+                </a>
+                <div class="game-info">
+                    <h3 class="game-title">Cyber Adventure 2077</h3>
+                    <div class="game-price">
+                        <div>
+                            <span class="discount">¥ 298</span>
+                            <span class="price">¥ 198</span>
+                        </div>
+                        <button class="buy-btn">加入购物车</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 游戏卡片2 -->
+            <div class="game-card">
+                <a href="game2.html">
+                    <img src="game2.jpg" class="game-image" alt="Space Warriors">
+                </a>
+                <div class="game-info">
+                    <h3 class="game-title">Space Warriors IV</h3>
+                    <div class="game-price">
+                        <span class="price">¥ 168</span>
+                        <button class="buy-btn">加入购物车</button>
+                    </div>
+                </div>
+            </div>
+            <!-- 更多游戏卡片... -->
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>关于我们</h4>
+                <a href="#">制作人员名单</a>
+            </div>
+            <div class="footer-section">
+                <h4>客户服务</h4>
+                <a href="#">帮助中心</a>
+                <a href="#">常见问题</a>
+            </div>
+            <div class="footer-section">
+                <h4>法律条款</h4>
+                <a href="#">隐私政策</a>
+                <a href="#">用户协议</a>
+            </div>
+            <div class="footer-section">
+                <h4>关注我们</h4>
+                <a href="#">QQ</a>
+                <a href="#">微信</a>
+                <a href="#">GitHub</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+</html>
+
+
+
+
+

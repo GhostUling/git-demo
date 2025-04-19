@@ -1,0 +1,81 @@
+<!-- 购物车页 cart.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>购物车 - Stream</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="index.html" class="logo">Stream</a>
+            <div class="nav-links">
+                <a href="index.html" class="active">商城</a>
+                <a href="cart.html">购物车 <span class="cart-counter">3</span></a>
+                <a href="about.html">关于</a>
+                <a href="login.html">登录/注册</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="cart-container">
+            <h1 class="cart-header">您的购物车</h1>
+            
+            <div class="cart-items">
+                <div class="cart-item">
+                    <img src="assets/images/game1-thumb.jpg" alt="Cyber Adventure">
+                    <div class="item-info">
+                        <h3>Cyber Adventure 2077</h3>
+                        <p>¥ 198</p>
+                    </div>
+                    <button class="remove-btn">移除</button>
+                </div>
+
+                <div class="cart-item">
+                    <img src="assets/images/game2-thumb.jpg" alt="Space Warriors">
+                    <div class="item-info">
+                        <h3>Space Warriors IV</h3>
+                        <p>¥ 168</p>
+                    </div>
+                    <button class="remove-btn">移除</button>
+                </div>
+            </div>
+
+            <div class="cart-total">
+                <h3>总计：¥ 366</h3>
+                <a href="payment.html" class="checkout-btn">前往结算 </a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>关于我们</h4>
+                <a href="#">制作人员名单</a>
+            </div>
+            <div class="footer-section">
+                <h4>客户服务</h4>
+                <a href="#">帮助中心</a>
+                <a href="#">常见问题</a>
+            </div>
+            <div class="footer-section">
+                <h4>法律条款</h4>
+                <a href="#">隐私政策</a>
+                <a href="#">用户协议</a>
+            </div>
+            <div class="footer-section">
+                <h4>关注我们</h4>
+                <a href="#">QQ</a>
+                <a href="#">微信</a>
+                <a href="#">GitHub</a>
+            </div>
+        </div>
+    </footer>
+    <!-- 同主页页脚 -->
+
+    <script src="main.js"></script>
+</body>
+</html>
