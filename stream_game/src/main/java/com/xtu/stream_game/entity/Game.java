@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int gameId;
+    private Long gameId;
     private String gameName;
     private BigDecimal price;
     private String description;
@@ -25,11 +25,11 @@ public class Game {
     private Developer developer;
 
     // Getters and Setters
-    public int getGameId() {
+    public Long getGameId() {
         return gameId;
     }
 
-    public void setGameId(int gameId) {
+    public void setGameId(Long gameId) {
         this.gameId = gameId;
     }
 

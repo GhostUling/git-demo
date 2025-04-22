@@ -11,7 +11,7 @@ import java.util.Date;
 public class Player {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int playerId;
+    private Long playerId;
     private String username;
     private String password;
     private String email;
@@ -20,11 +20,11 @@ public class Player {
     private String avatarUrl;
 
     // Getters and Setters
-    public int getPlayerId() {
+    public Long getPlayerId() {
         return playerId;
     }
 
-    public void setPlayerId(int playerId) {
+    public void setPlayerId(Long playerId) {
         this.playerId = playerId;
     }
 
