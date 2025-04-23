@@ -33,7 +33,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Transaction getTransactionById(int transactionId) {
+    public Transaction getTransactionById(Long transactionId) {
         return transactionRepository.findById(transactionId).orElse(null);
     }
 
@@ -66,7 +66,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Transaction updateTransactionStatus(int transactionId, PaymentStatus paymentStatus) {
+    public Transaction updateTransactionStatus(Long transactionId, PaymentStatus paymentStatus) {
         Optional<Transaction> transactionOpt = transactionRepository.findById(transactionId);
         
         if (transactionOpt.isPresent()) {
@@ -79,7 +79,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Transaction purchaseGame(int playerId, int gameId) {
+    public Transaction purchaseGame(Long playerId, Long gameId) {
         // 获取玩家和游戏
         Optional<Player> playerOpt = playerRepository.findById(playerId);
         Optional<Game> gameOpt = gameRepository.findById(gameId);

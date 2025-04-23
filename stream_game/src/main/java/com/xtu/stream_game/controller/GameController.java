@@ -25,7 +25,7 @@ public class GameController {
 
     // 根据ID获取游戏
     @GetMapping("/{gameId}")
-    public ResponseEntity<Game> getGameById(@PathVariable int gameId) {
+    public ResponseEntity<Game> getGameById(@PathVariable Long gameId) {
         Game game = gameService.getGameById(gameId);
         if (game == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -45,7 +45,7 @@ public class GameController {
 
     // 根据开发者ID获取游戏
     @GetMapping("/developer/{developerId}")
-    public ResponseEntity<List<Game>> getGamesByDeveloperId(@PathVariable int developerId) {
+    public ResponseEntity<List<Game>> getGamesByDeveloperId(@PathVariable Long developerId) {
         List<Game> games = gameService.getGamesByDeveloperId(developerId);
         return new ResponseEntity<>(games, HttpStatus.OK);
     }
@@ -66,7 +66,7 @@ public class GameController {
 
     // 更新游戏信息
     @PutMapping("/{gameId}")
-    public ResponseEntity<Game> updateGame(@PathVariable int gameId, @RequestBody Game gameDetails) {
+    public ResponseEntity<Game> updateGame(@PathVariable Long gameId, @RequestBody Game gameDetails) {
         Game updatedGame = gameService.updateGame(gameId, gameDetails);
         if (updatedGame == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -76,7 +76,7 @@ public class GameController {
 
     // 删除游戏
     @DeleteMapping("/{gameId}")
-    public ResponseEntity<Void> deleteGame(@PathVariable int gameId) {
+    public ResponseEntity<Void> deleteGame(@PathVariable Long gameId) {
         Game game = gameService.getGameById(gameId);
         if (game == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

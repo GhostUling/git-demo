@@ -12,7 +12,7 @@ import java.util.Date;
 public class PlayerGame {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
     
     @ManyToOne
     @JoinColumn(name = "player_id")
@@ -27,11 +27,11 @@ public class PlayerGame {
     private Date lastPlayedDate;
     
     // Getters and Setters
-    public int getId() {
+    public Long getId() {
         return id;
     }
     
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
     

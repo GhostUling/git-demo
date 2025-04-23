@@ -38,7 +38,7 @@ public class TransactionController {
 
     // 根据ID获取交易记录
     @GetMapping("/{transactionId}")
-    public ResponseEntity<Transaction> getTransactionById(@PathVariable int transactionId) {
+    public ResponseEntity<Transaction> getTransactionById(@PathVariable Long transactionId) {
         Transaction transaction = transactionService.getTransactionById(transactionId);
         if (transaction == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -48,7 +48,7 @@ public class TransactionController {
 
     // 根据玩家ID获取交易记录
     @GetMapping("/player/{playerId}")
-    public ResponseEntity<List<Transaction>> getTransactionsByPlayerId(@PathVariable int playerId) {
+    public ResponseEntity<List<Transaction>> getTransactionsByPlayerId(@PathVariable Long playerId) {
         Player player = playerService.getPlayerById(playerId);
         if (player == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -59,7 +59,7 @@ public class TransactionController {
 
     // 根据游戏ID获取交易记录
     @GetMapping("/game/{gameId}")
-    public ResponseEntity<List<Transaction>> getTransactionsByGameId(@PathVariable int gameId) {
+    public ResponseEntity<List<Transaction>> getTransactionsByGameId(@PathVariable Long gameId) {
         Game game = gameService.getGameById(gameId);
         if (game == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -99,7 +99,7 @@ public class TransactionController {
     // 更新交易状态
     @PutMapping("/{transactionId}/status")
     public ResponseEntity<Transaction> updateTransactionStatus(
-            @PathVariable int transactionId, 
+            @PathVariable Long transactionId, 
             @RequestBody Map<String, String> statusUpdate) {
         try {
             String status = statusUpdate.get("status");
@@ -122,9 +122,9 @@ public class TransactionController {
 
     // 玩家购买游戏
     @PostMapping("/purchase")
-    public ResponseEntity<Transaction> purchaseGame(@RequestBody Map<String, Integer> purchaseRequest) {
-        Integer playerId = purchaseRequest.get("playerId");
-        Integer gameId = purchaseRequest.get("gameId");
+    public ResponseEntity<Transaction> purchaseGame(@RequestBody Map<String, Long> purchaseRequest) {
+        Long playerId = purchaseRequest.get("playerId");
+        Long gameId = purchaseRequest.get("gameId");
         
         if (playerId == null || gameId == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

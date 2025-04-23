@@ -3,6 +3,7 @@ package com.xtu.stream_game.controller;
 import com.xtu.stream_game.entity.Player;
 import com.xtu.stream_game.service.PlayerService;
 import com.xtu.stream_game.service.EmailService;
+import com.xtu.stream_game.service.impl.EmailServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class PlayerController {
 
     // 根据ID获取玩家
     @GetMapping("/{playerId}")
-    public ResponseEntity<Player> getPlayerById(@PathVariable int playerId) {
+    public ResponseEntity<Player> getPlayerById(@PathVariable Long playerId) {
         Player player = playerService.getPlayerById(playerId);
         if (player == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -136,7 +137,7 @@ public class PlayerController {
 
     // 更新玩家信息
     @PutMapping("/{playerId}")
-    public ResponseEntity<Player> updatePlayer(@PathVariable int playerId, @RequestBody Player playerDetails) {
+    public ResponseEntity<Player> updatePlayer(@PathVariable Long playerId, @RequestBody Player playerDetails) {
         Player updatedPlayer = playerService.updatePlayer(playerId, playerDetails);
         if (updatedPlayer == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -146,7 +147,7 @@ public class PlayerController {
 
     // 删除玩家
     @DeleteMapping("/{playerId}")
-    public ResponseEntity<Void> deletePlayer(@PathVariable int playerId) {
+    public ResponseEntity<Void> deletePlayer(@PathVariable Long playerId) {
         Player player = playerService.getPlayerById(playerId);
         if (player == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
