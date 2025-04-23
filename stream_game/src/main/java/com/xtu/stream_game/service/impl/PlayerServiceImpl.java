@@ -6,6 +6,7 @@ import com.xtu.stream_game.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -57,6 +58,11 @@ public class PlayerServiceImpl implements PlayerService {
         
         // 设置注册时间
         player.setRegistrationTime(new Date());
+        
+        // 设置默认余额（如果为null）
+        if (player.getBalance() == null) {
+            player.setBalance(new BigDecimal("0.00"));
+        }
         
         return playerRepository.save(player);
     }

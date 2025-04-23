@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-StreamGameApplication<stream_game>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.xtu.stream_game.StreamGameApplication",
+            "projectName": "stream_game",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
