@@ -4,7 +4,7 @@
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>登录/注册 - Stream</title>
-		<link rel="stylesheet" href="style.css">
+		<link rel="stylesheet" href="../assets/css/style.css">
 		<style>
 			.login-container {
 				max-width: 400px;
@@ -101,7 +101,7 @@
 		<nav class="navbar">
 			<div class="nav-content">
 				<!-- 左侧logo -->
-				<a href="index.html" class="logo">Stream</a>
+				<a href="../index.html" class="logo">Stream</a>
 				
 				<!-- 搜索框 -->
 				<div class="search-container">
@@ -121,7 +121,7 @@
 	
 				<!-- 右侧导航链接 -->
 				<div class="nav-links">
-					<a href="index.html">商城</a>
+					<a href="../index.html">商城</a>
 					<a href="cart.html">购物车 <span class="cart-counter">0</span></a>
 					<a href="about.html">关于</a>
 					<a href="login.html" class="active">登录/注册</a>
@@ -207,7 +207,7 @@
 			</div>
 		</footer>
 
-		<script src="main.js"></script>
+		<script src="../assets/js/main.js"></script>
 		<script>
 			// 登录/注册表单切换
 			document.addEventListener('DOMContentLoaded', function() {
@@ -225,6 +225,47 @@
 					showLogin.addEventListener('click', function() {
 						registerFormContainer.style.display = 'none';
 						loginFormContainer.style.display = 'block';
+					});
+				}
+				
+				// 登录表单提交
+				const loginForm = document.getElementById('login-form');
+				if (loginForm) {
+					loginForm.addEventListener('submit', function(e) {
+						e.preventDefault();
+						
+						const username = document.getElementById('username').value;
+						const password = document.getElementById('password').value;
+						
+						fetch('http://localhost:8080/api/players/login', {
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/json'
+							},
+							body: JSON.stringify({
+								username: username,
+								password: password
+							})
+						})
+						.then(response => {
+							if (response.status === 401) {
+								throw new Error('用户名或密码错误');
+							}
+							if (!response.ok) {
+								throw new Error('登录失败');
+							}
+							return response.json();
+						})
+						.then(player => {
+							alert('登录成功！欢迎 ' + player.username);
+							// 保存登录状态
+							localStorage.setItem('currentPlayer', JSON.stringify(player));
+							// 跳转至首页
+							window.location.href = '../index.html';
+						})
+						.catch(error => {
+							alert(error.message);
+						});
 					});
 				}
 				
@@ -278,4 +319,4 @@
 			});
 		</script>
 	</body>
-</html>
+</html> 

@@ -1,5 +1,6 @@
 package com.xtu.stream_game.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,12 +12,25 @@ import java.util.Date;
 public class Player {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "player_id")
     private int playerId;
+    
+    @Column(name = "username")
     private String username;
+    
+    @Column(name = "password")
     private String password;
+    
+    @Column(name = "email")
     private String email;
+    
+    @Column(name = "registration_time")
     private Date registrationTime;
+    
+    @Column(name = "balance")
     private BigDecimal balance;
+    
+    @Column(name = "avatar_url")
     private String avatarUrl;
 
     // Getters and Setters
