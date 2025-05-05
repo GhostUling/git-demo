@@ -3,12 +3,14 @@ package com.xtu.stream_game.controller;
 import com.xtu.stream_game.entity.GameUpload;
 import com.xtu.stream_game.service.GameUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Arrays;
 
 @RestController
 @RequestMapping("/api/game-upload")
@@ -16,6 +18,12 @@ public class GameUploadController {
 
     @Autowired
     private GameUploadService gameUploadService;
+
+    @Value("${game.upload.max-size}")
+    private String maxFileSize;
+
+    @Value("${game.upload.allowed-types}")
+    private String allowedTypes;
 
     @PostMapping("/upload")
     public ResponseEntity<?> uploadGame(
@@ -25,6 +33,24 @@ public class GameUploadController {
             @RequestParam(value = "description", required = false) String description,
             @RequestParam("file") MultipartFile file) {
         try {
+            // 验证文件大小
+            long maxSize = parseFileSize(maxFileSize);
+            if (file.getSize() > maxSize) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "error", "文件大小超出限制",
+                        "message", "最大允许上传 " + maxFileSize
+                ));
+            }
+
+            // 验证文件类型
+            String contentType = file.getContentType();
+            if (contentType == null || !Arrays.asList(allowedTypes.split(",")).contains(contentType)) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "error", "不支持的文件类型",
+                        "message", "只允许上传压缩文件"
+                ));
+            }
+
             GameUpload upload = gameUploadService.uploadGame(developerId, gameName, version, description, file);
             return ResponseEntity.ok(upload);
         } catch (Exception e) {
@@ -89,5 +115,17 @@ public class GameUploadController {
                     "message", e.getMessage()
             ));
         }
+    }
+
+    private long parseFileSize(String size) {
+        size = size.toUpperCase();
+        if (size.endsWith("MB")) {
+            return Long.parseLong(size.substring(0, size.length() - 2)) * 1024 * 1024;
+        } else if (size.endsWith("KB")) {
+            return Long.parseLong(size.substring(0, size.length() - 2)) * 1024;
+        } else if (size.endsWith("B")) {
+            return Long.parseLong(size.substring(0, size.length() - 1));
+        }
+        return Long.parseLong(size);
     }
 } 
