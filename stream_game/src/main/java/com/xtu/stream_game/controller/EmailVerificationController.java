@@ -1,6 +1,6 @@
 package com.xtu.stream_game.controller;
 
-import com.xtu.stream_game.service.EmailVerificationService;
+import com.xtu.stream_game.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +13,7 @@ import java.util.Map;
 public class EmailVerificationController {
 
     @Autowired
-    private EmailVerificationService emailVerificationService;
+    private EmailService emailService;
 
     @PostMapping("/send-code")
     public ResponseEntity<?> sendVerificationCode(@RequestBody Map<String, String> request) {
@@ -23,7 +23,8 @@ public class EmailVerificationController {
         }
 
         try {
-            emailVerificationService.sendVerificationCode(email);
+            String verificationCode = emailService.generateVerificationCode();
+            emailService.sendVerificationEmail(email, verificationCode);
             Map<String, String> response = new HashMap<>();
             response.put("message", "验证码已发送到您的邮箱");
             return ResponseEntity.ok(response);
@@ -42,7 +43,7 @@ public class EmailVerificationController {
         }
 
         try {
-            boolean isValid = emailVerificationService.verifyCode(email, code);
+            boolean isValid = emailService.verifyEmail(email, code);
             Map<String, Object> response = new HashMap<>();
             response.put("verified", isValid);
             response.put("message", isValid ? "验证成功" : "验证码无效或已过期");
@@ -55,7 +56,7 @@ public class EmailVerificationController {
     @GetMapping("/status/{email}")
     public ResponseEntity<?> getVerificationStatus(@PathVariable String email) {
         try {
-            boolean isVerified = emailVerificationService.isEmailVerified(email);
+            boolean isVerified = emailService.isEmailVerified(email);
             Map<String, Object> response = new HashMap<>();
             response.put("email", email);
             response.put("verified", isVerified);

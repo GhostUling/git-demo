@@ -9,6 +9,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.util.Random;
+import java.util.Optional;
 
 @Service
 public class EmailServiceImpl implements EmailService {
@@ -40,17 +41,41 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public boolean verifyEmail(String email, String verificationCode) {
-        EmailVerification verification = emailVerificationRepository
-            .findByEmailAndVerificationCode(email, verificationCode)
-            .orElse(null);
+        Optional<EmailVerification> verificationOpt = emailVerificationRepository
+            .findByEmailAndVerificationCode(email, verificationCode);
             
-        if (verification == null || verification.isExpired()) {
+        if (verificationOpt.isEmpty()) {
+            return false;
+        }
+        
+        EmailVerification verification = verificationOpt.get();
+        if (verification.isExpired() || verification.isVerified()) {
             return false;
         }
         
         verification.setVerified(true);
         emailVerificationRepository.save(verification);
         return true;
+    }
+    
+    @Override
+    public boolean isEmailVerified(String email) {
+        return emailVerificationRepository.findByEmailOrderByIdDesc(email)
+                .stream()
+                .findFirst()
+                .map(EmailVerification::isVerified)
+                .orElse(false);
+    }
+
+    @Override
+    public void sendNotificationEmail(String to, String subject, String content) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(FROM_EMAIL);
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(content);
+        
+        mailSender.send(message);
     }
     
     public String generateVerificationCode() {
@@ -60,15 +85,5 @@ public class EmailServiceImpl implements EmailService {
             code.append(random.nextInt(10));
         }
         return code.toString();
-    }
-
-    public void sendNotificationEmail(String to, String subject, String content) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("your-email@qq.com"); // 发件人邮箱
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(content);
-        
-        mailSender.send(message);
     }
 } 
