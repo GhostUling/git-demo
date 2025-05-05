@@ -61,4 +61,14 @@ public class EmailServiceImpl implements EmailService {
         }
         return code.toString();
     }
+
+    public void sendNotificationEmail(String to, String subject, String content) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("your-email@qq.com"); // 发件人邮箱
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(content);
+        
+        mailSender.send(message);
+    }
 } 
