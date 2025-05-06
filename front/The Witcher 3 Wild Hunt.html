@@ -1,0 +1,112 @@
+<!-- 游戏详情页 game-detail.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>The Witcher 3 Wild Hunt - 游戏详情</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-content">
+            <!-- 左侧logo -->
+            <a href="index.html" class="logo">Stream</a>
+            
+            <!-- 搜索框 -->
+            <div class="search-container">
+                <form id="search-form">
+                    <input type="text" 
+                           placeholder="搜索游戏..." 
+                           class="search-input"
+                           id="search-input">
+                    <button type="submit" class="search-btn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#b8b6b4" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="M21 21l-4.35-4.35"/>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+    
+            <!-- 右侧导航链接 -->
+            <div class="nav-links">
+                <a href="index.html" class="active">商城</a>
+                <a href="cart.html">购物车 <span class="cart-counter">3</span></a>
+                <a href="about.html">关于</a>
+                <a href="login.html">登录/注册</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="game-detail">
+            <img src="The Witcher 3 Wild Hunt.jpg" class="game-banner" alt="游戏横幅">
+            
+            <div class="purchase-box">
+                <div>
+                    <span class="price" style="font-size: 24px;">¥ 149</span>
+                    <div class="game-tags">
+                        <span class="game-tag">开放世界</span>
+                        <span class="game-tag">奇幻</span>
+                        <span class="game-tag">动作角色扮演</span>
+                    </div>
+                </div>
+                <button class="buy-btn" style="padding: 15px 40px;">加入购物车</button>
+            </div>
+
+            <div class="game-content">
+                <h2>游戏介绍</h2>
+                <p>您是利维亚的杰洛特，收钱办事的怪物杀手。您可以在眼前这片怪物横行、饱受战火摧残的土地上尽情探索。
+				您手上的委托？追踪预言之子——希里，一件足以改变世界面貌的活生生的武器。</p>
+                
+                <h2>特色系统</h2>
+                <ul>
+                    <li>游戏模式：游戏模式根据其难度从低到高分别为：“看剧情就好”、“想流点汗”、“想流点血”、“死而无憾”。</li>
+                    <li>战斗系统：游戏以即时类战斗为基础，游戏角色需要根据不同的敌人制定相应的应对策略。
+					面对人类和类人生物需要使用钢剑，对付怪物时则需要使用银剑。拔剑后即进入战斗状态，系统将自动锁定离主角最近的目标。
+					通过物理攻击、法印和相应的躲避方式来进行作战。</li>
+                    <li>任务系统：游戏中的任务分为主线任务和支线任务，当完成相应任务后归档为已完成或失败。
+					玩家除了可以追随主线任务的标记依序前往不同的地图外，也可以暂时放下眼前的任务去好好地探索目前所在的地图，
+					游戏中的每一张地图上都有着相当丰富的支线任务与隐藏地点等待玩家去探索、发掘与执行。</li>
+                </ul>
+
+                <h2>系统需求</h2>
+                <ul class="system-requirements">
+                    <li>操作系统: 64-bit Windows 7 or 64-bit Windows 8 (8.1)</li>
+                    <li>处理器: Intel CPU Core i7 3770 3.4 GHz or AMD CPU AMD FX-8350 4 GHz</li>
+                    <li>内存: 8 GB RAM</li>
+                    <li>显卡: NVIDIA GPU GeForce GTX 770 or AMD GPU Radeon R9 290</li>
+                    <li>存储空间: 需要 40 GB 可用空间</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+	<footer>
+	    <div class="footer-content">
+	        <div class="footer-section">
+	            <h4>关于我们</h4>
+	            <a href="#">制作人员名单</a>
+	        </div>
+	        <div class="footer-section">
+	            <h4>客户服务</h4>
+	            <a href="#">帮助中心</a>
+	            <a href="#">常见问题</a>
+	        </div>
+	        <div class="footer-section">
+	            <h4>法律条款</h4>
+	            <a href="#">隐私政策</a>
+	            <a href="#">用户协议</a>
+	        </div>
+	        <div class="footer-section">
+	            <h4>关注我们</h4>
+	            <a href="#">QQ</a>
+	            <a href="#">微信</a>
+	            <a href="#">GitHub</a>
+	        </div>
+	    </div>
+	</footer>
+<!-- 同主页页脚 -->
+    <script src="main.js"></script>
+</body>
+</html>
