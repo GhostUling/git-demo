@@ -13,9 +13,9 @@ import java.util.Optional;
 public interface PlayerGameLibraryRepository extends JpaRepository<PlayerGameLibrary, Long> {
     List<PlayerGameLibrary> findByPlayerId(Long playerId);
     Optional<PlayerGameLibrary> findByPlayerIdAndGameId(Long playerId, Long gameId);
-    
-    @Query("SELECT pgl FROM PlayerGameLibrary pgl WHERE pgl.player.id = :playerId ORDER BY pgl.lastPlayTime DESC")
-    List<PlayerGameLibrary> findByPlayerIdOrderByLastPlayTimeDesc(@Param("playerId") Long playerId);
+    List<PlayerGameLibrary> findByPlayerIdAndIsFavorite(Long playerId, Boolean isFavorite);
+    List<PlayerGameLibrary> findByPlayerIdOrderByLastPlayTimeDesc(Long playerId);
+    List<PlayerGameLibrary> findByPlayerIdOrderByPlayTimeDesc(Long playerId);
     
     @Query("SELECT pgl FROM PlayerGameLibrary pgl WHERE pgl.player.id = :playerId ORDER BY pgl.totalPlayTime DESC")
     List<PlayerGameLibrary> findByPlayerIdOrderByTotalPlayTimeDesc(@Param("playerId") Long playerId);
