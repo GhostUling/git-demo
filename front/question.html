@@ -1,0 +1,135 @@
+<!-- question.html 常见问题 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>常见问题 - Stream</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+       
+        .faq-container {
+            max-width: 800px;
+            margin: 80px auto 0;
+            padding: 30px;
+        }
+        .faq-item {
+            background: #1a1a1a;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        .faq-item:hover {
+            transform: translateX(10px);
+        }
+        .faq-question {
+            color: #66c0f4;
+            cursor: pointer;
+            position: relative;
+            padding-left: 30px;
+        }
+        .faq-question::before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            transition: transform 0.3s ease;
+        }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="container">
+        <!-- faq.html -->
+<div class="faq-container">
+    <h1>常见问题解答</h1>
+
+    <!-- 账户类问题 -->
+    <div class="faq-item">
+        <div class="faq-question">如何注册账户？</div>
+        <div class="faq-answer">
+            <p>点击导航栏的「登录/注册」按钮，选择注册选项并填写邮箱、用户名和密码即可完成注册。</p>
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question">忘记密码怎么办？</div>
+        <div class="faq-answer">
+            <p>在登录页面点击「忘记密码」，输入注册邮箱后按提示操作即可重置密码。</p>
+        </div>
+    </div>
+
+    <!-- 支付类问题 -->
+    <div class="faq-item">
+        <div class="faq-question">支持哪些支付方式？</div>
+        <div class="faq-answer">
+            <p>我们支持支付宝、微信支付、银联卡及国际信用卡（Visa/MasterCard）付款。</p>
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question">使用优惠券后还能退款吗？</div>
+        <div class="faq-answer">
+            <p>退款金额将扣除已使用的优惠券面值，剩余部分按实际支付金额退回原支付账户。</p>
+        </div>
+    </div>
+
+    <!-- 下载安装类问题 -->
+    <div class="faq-item">
+        <div class="faq-question">游戏下载速度慢怎么办？</div>
+        <div class="faq-answer">
+            <p>请尝试以下方案：<br>
+            1. 检查网络连接稳定性<br>
+            2. 在设置中切换下载区域<br>
+            3. 暂停后重新开始下载任务</p>
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question">安装游戏时提示磁盘空间不足</div>
+        <div class="faq-answer">
+            <p>请确保安装目录所在磁盘至少有游戏体积1.5倍的空余空间，建议清理缓存或更换安装路径。</p>
+        </div>
+    </div>
+
+    <!-- 退款类问题 -->
+    <div class="faq-item">
+        <div class="faq-question">如何申请游戏退款？</div>
+        <div class="faq-answer">
+            <p>在「订单历史」中选择需退款的游戏，满足以下条件可自助申请：<br>
+            - 购买时间未超过14天<br>
+            - 游戏运行时间未超过2小时</p>
+        </div>
+    </div>
+
+    <!-- 技术支持类问题 -->
+    <div class="faq-item">
+        <div class="faq-question">游戏启动后闪退如何解决？</div>
+        <div class="faq-answer">
+            <p>请依次尝试以下操作：<br>
+            1. 更新显卡驱动至最新版本<br>
+            2. 验证游戏文件完整性<br>
+            3. 关闭后台冲突软件（如杀毒程序）</p>
+        </div>
+    </div>
+
+
+</div>
+    </div>
+  
+    <script>
+        // 手风琴效果
+        document.querySelectorAll('.faq-question').forEach(item => {
+            item.addEventListener('click', () => {
+                const answer = item.nextElementSibling;
+                answer.style.maxHeight = answer.style.maxHeight ? null : `${answer.scrollHeight}px`;
+                item.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>

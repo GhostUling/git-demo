@@ -357,3 +357,41 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+
+// ================= 导航栏动态控制 =================
+function updateNavbar() {
+    const navLinks = document.getElementById('nav-links');
+    const currentUser = JSON.parse(sessionStorage.getItem('currentPlayer'));
+    
+    // 基础链接
+    let linksHtml = `
+        <a href="index.html" class="${location.pathname.endsWith('index.html') ? 'active' : ''}">商城</a>
+        <a href="cart.html" class="${location.pathname.endsWith('cart.html') ? 'active' : ''}">购物车 <span class="cart-counter">0</span></a>
+        <a href="about.html" class="${location.pathname.endsWith('about.html') ? 'active' : ''}">关于</a>
+    `;
+
+    // 根据登录状态显示不同内容
+    if (currentUser) {
+        linksHtml += `
+            <a href="profile.html" class="${location.pathname.endsWith('profile.html') ? 'active' : ''}">个人中心</a>
+            <a href="#" id="logout-btn">退出</a>
+        `;
+    } else {
+        linksHtml += `<a href="login.html" class="${location.pathname.endsWith('login.html') ? 'active' : ''}">登录/注册</a>`;
+    }
+
+    navLinks.innerHTML = linksHtml;
+    
+    // 绑定退出事件
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            sessionStorage.removeItem('currentPlayer');
+            window.location.href = 'login.html';
+        });
+    }
+}
+
+// 初始化调用
+document.addEventListener('DOMContentLoaded', updateNavbar);

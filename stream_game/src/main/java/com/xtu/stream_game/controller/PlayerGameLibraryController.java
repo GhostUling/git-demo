@@ -3,7 +3,6 @@ package com.xtu.stream_game.controller;
 import com.xtu.stream_game.entity.PlayerGameLibrary;
 import com.xtu.stream_game.service.PlayerGameLibraryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,147 +10,155 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/player-games")
+@RequestMapping("/api/library")
 public class PlayerGameLibraryController {
 
     @Autowired
-    private PlayerGameLibraryService playerGameLibraryService;
+    private PlayerGameLibraryService libraryService;
 
-    // 添加游戏到库
     @PostMapping("/{playerId}/games/{gameId}")
-    public ResponseEntity<PlayerGameLibrary> addGameToLibrary(
+    public ResponseEntity<?> addGameToLibrary(
             @PathVariable Long playerId,
             @PathVariable Long gameId) {
-        PlayerGameLibrary library = playerGameLibraryService.addGameToLibrary(playerId, gameId);
-        if (library == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        try {
+            PlayerGameLibrary library = libraryService.addGameToLibrary(playerId, gameId);
+            return ResponseEntity.ok(library);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", "添加游戏失败",
+                    "message", e.getMessage()
+            ));
         }
-        return new ResponseEntity<>(library, HttpStatus.CREATED);
     }
 
-    // 获取玩家的所有游戏
-    @GetMapping("/{playerId}")
-    public ResponseEntity<List<PlayerGameLibrary>> getPlayerGames(@PathVariable Long playerId) {
-        List<PlayerGameLibrary> games = playerGameLibraryService.getPlayerGames(playerId);
-        return new ResponseEntity<>(games, HttpStatus.OK);
-    }
-
-    // 获取玩家的特定游戏
     @GetMapping("/{playerId}/games/{gameId}")
-    public ResponseEntity<PlayerGameLibrary> getPlayerGame(
+    public ResponseEntity<?> getGameFromLibrary(
             @PathVariable Long playerId,
             @PathVariable Long gameId) {
-        PlayerGameLibrary library = playerGameLibraryService.getPlayerGame(playerId, gameId);
-        if (library == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        try {
+            PlayerGameLibrary library = libraryService.getGameFromLibrary(playerId, gameId);
+            return ResponseEntity.ok(library);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", "获取游戏失败",
+                    "message", e.getMessage()
+            ));
         }
-        return new ResponseEntity<>(library, HttpStatus.OK);
     }
 
-    // 获取玩家已安装的游戏
-    @GetMapping("/{playerId}/installed")
-    public ResponseEntity<List<PlayerGameLibrary>> getInstalledGames(@PathVariable Long playerId) {
-        List<PlayerGameLibrary> games = playerGameLibraryService.getInstalledGames(playerId);
-        return new ResponseEntity<>(games, HttpStatus.OK);
+    @GetMapping("/{playerId}/games")
+    public ResponseEntity<?> getPlayerLibrary(@PathVariable Long playerId) {
+        try {
+            List<PlayerGameLibrary> library = libraryService.getPlayerLibrary(playerId);
+            return ResponseEntity.ok(library);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", "获取游戏库失败",
+                    "message", e.getMessage()
+            ));
+        }
     }
 
-    // 按游戏类型获取游戏
-    @GetMapping("/{playerId}/type/{gameType}")
-    public ResponseEntity<List<PlayerGameLibrary>> getGamesByType(
-            @PathVariable Long playerId,
-            @PathVariable String gameType) {
-        List<PlayerGameLibrary> games = playerGameLibraryService.getGamesByType(playerId, gameType);
-        return new ResponseEntity<>(games, HttpStatus.OK);
+    @GetMapping("/{playerId}/favorites")
+    public ResponseEntity<?> getFavoriteGames(@PathVariable Long playerId) {
+        try {
+            List<PlayerGameLibrary> favorites = libraryService.getFavoriteGames(playerId);
+            return ResponseEntity.ok(favorites);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", "获取收藏游戏失败",
+                    "message", e.getMessage()
+            ));
+        }
     }
 
-    // 按最后游玩时间排序
-    @GetMapping("/{playerId}/sort/last-played")
-    public ResponseEntity<List<PlayerGameLibrary>> getGamesOrderByLastPlayed(@PathVariable Long playerId) {
-        List<PlayerGameLibrary> games = playerGameLibraryService.getGamesOrderByLastPlayed(playerId);
-        return new ResponseEntity<>(games, HttpStatus.OK);
+    @GetMapping("/{playerId}/recent")
+    public ResponseEntity<?> getRecentlyPlayedGames(@PathVariable Long playerId) {
+        try {
+            List<PlayerGameLibrary> recent = libraryService.getRecentlyPlayedGames(playerId);
+            return ResponseEntity.ok(recent);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", "获取最近游戏失败",
+                    "message", e.getMessage()
+            ));
+        }
     }
 
-    // 按总游戏时长排序
-    @GetMapping("/{playerId}/sort/play-time")
-    public ResponseEntity<List<PlayerGameLibrary>> getGamesOrderByPlayTime(@PathVariable Long playerId) {
-        List<PlayerGameLibrary> games = playerGameLibraryService.getGamesOrderByPlayTime(playerId);
-        return new ResponseEntity<>(games, HttpStatus.OK);
+    @GetMapping("/{playerId}/most-played")
+    public ResponseEntity<?> getMostPlayedGames(@PathVariable Long playerId) {
+        try {
+            List<PlayerGameLibrary> mostPlayed = libraryService.getMostPlayedGames(playerId);
+            return ResponseEntity.ok(mostPlayed);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", "获取最常玩游戏失败",
+                    "message", e.getMessage()
+            ));
+        }
     }
 
-    // 安装游戏
-    @PostMapping("/{playerId}/games/{gameId}/install")
-    public ResponseEntity<PlayerGameLibrary> installGame(
+    @PutMapping("/{playerId}/games/{gameId}/playtime")
+    public ResponseEntity<?> updateGamePlayTime(
             @PathVariable Long playerId,
             @PathVariable Long gameId,
-            @RequestBody Map<String, String> request) {
-        String installPath = request.get("installPath");
-        PlayerGameLibrary library = playerGameLibraryService.installGame(playerId, gameId, installPath);
-        if (library == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            @RequestBody Map<String, Integer> request) {
+        try {
+            Integer playTime = request.get("playTime");
+            PlayerGameLibrary library = libraryService.updateGamePlayTime(playerId, gameId, playTime);
+            return ResponseEntity.ok(library);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", "更新游戏时长失败",
+                    "message", e.getMessage()
+            ));
         }
-        return new ResponseEntity<>(library, HttpStatus.OK);
     }
 
-    // 卸载游戏
-    @PostMapping("/{playerId}/games/{gameId}/uninstall")
-    public ResponseEntity<PlayerGameLibrary> uninstallGame(
+    @PutMapping("/{playerId}/games/{gameId}/favorite")
+    public ResponseEntity<?> toggleFavorite(
             @PathVariable Long playerId,
             @PathVariable Long gameId) {
-        PlayerGameLibrary library = playerGameLibraryService.uninstallGame(playerId, gameId);
-        if (library == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        try {
+            PlayerGameLibrary library = libraryService.toggleFavorite(playerId, gameId);
+            return ResponseEntity.ok(library);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", "更新收藏状态失败",
+                    "message", e.getMessage()
+            ));
         }
-        return new ResponseEntity<>(library, HttpStatus.OK);
     }
 
-    // 更新游戏设置
-    @PutMapping("/{playerId}/games/{gameId}/settings")
-    public ResponseEntity<PlayerGameLibrary> updateGameSettings(
+    @PutMapping("/{playerId}/games/{gameId}/notes")
+    public ResponseEntity<?> updateGameNotes(
             @PathVariable Long playerId,
             @PathVariable Long gameId,
             @RequestBody Map<String, String> request) {
-        String settings = request.get("settings");
-        PlayerGameLibrary library = playerGameLibraryService.updateGameSettings(playerId, gameId, settings);
-        if (library == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        try {
+            String notes = request.get("notes");
+            PlayerGameLibrary library = libraryService.updateGameNotes(playerId, gameId, notes);
+            return ResponseEntity.ok(library);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", "更新游戏备注失败",
+                    "message", e.getMessage()
+            ));
         }
-        return new ResponseEntity<>(library, HttpStatus.OK);
     }
 
-    // 更新游戏存档路径
-    @PutMapping("/{playerId}/games/{gameId}/save-path")
-    public ResponseEntity<PlayerGameLibrary> updateSavePath(
-            @PathVariable Long playerId,
-            @PathVariable Long gameId,
-            @RequestBody Map<String, String> request) {
-        String savePath = request.get("savePath");
-        PlayerGameLibrary library = playerGameLibraryService.updateSavePath(playerId, gameId, savePath);
-        if (library == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(library, HttpStatus.OK);
-    }
-
-    // 更新游戏时长
-    @PutMapping("/{playerId}/games/{gameId}/play-time")
-    public ResponseEntity<PlayerGameLibrary> updatePlayTime(
-            @PathVariable Long playerId,
-            @PathVariable Long gameId,
-            @RequestBody Map<String, Long> request) {
-        Long playTime = request.get("playTime");
-        PlayerGameLibrary library = playerGameLibraryService.updatePlayTime(playerId, gameId, playTime);
-        if (library == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(library, HttpStatus.OK);
-    }
-
-    // 从库中移除游戏
     @DeleteMapping("/{playerId}/games/{gameId}")
-    public ResponseEntity<Void> removeGameFromLibrary(
+    public ResponseEntity<?> removeGameFromLibrary(
             @PathVariable Long playerId,
             @PathVariable Long gameId) {
-        playerGameLibraryService.removeGameFromLibrary(playerId, gameId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        try {
+            libraryService.removeGameFromLibrary(playerId, gameId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", "移除游戏失败",
+                    "message", e.getMessage()
+            ));
+        }
     }
 } 
