@@ -789,3 +789,39 @@ footer {
                 padding: 20px;
             }
         }
+        
+        /* 游戏库项悬停效果 */
+.library-item {
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.library-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(102,192,244,0.2);
+}
+
+/* 图表容器 */
+.playtime-chart {
+    background: #252525;
+    border-radius: 8px;
+    padding: 20px;
+    height: 400px;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .profile-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .sidebar {
+        display: flex;
+        overflow-x: auto;
+        gap: 10px;
+    }
+    
+    .nav-item {
+        white-space: nowrap;
+    }
+}

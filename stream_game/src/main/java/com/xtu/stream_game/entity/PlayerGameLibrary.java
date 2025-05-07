@@ -18,13 +18,20 @@ public class PlayerGameLibrary {
     @JoinColumn(name = "game_id", nullable = false)
     private Game game;
 
+    @Column(nullable = false)
     private LocalDateTime purchaseTime;
+
+    @Column(nullable = false)
     private LocalDateTime lastPlayTime;
-    private Long totalPlayTime; // 总游戏时长（分钟）
-    private boolean isInstalled;
-    private String installPath;
-    private String savePath;
-    private String gameSettings; // 游戏设置（JSON格式存储）
+
+    @Column
+    private Integer playTime; // 游戏时长（分钟）
+
+    @Column
+    private Boolean isFavorite;
+
+    @Column(length = 500)
+    private String notes;
 
     public PlayerGameLibrary() {
     }
@@ -33,8 +40,8 @@ public class PlayerGameLibrary {
         this.player = player;
         this.game = game;
         this.purchaseTime = LocalDateTime.now();
-        this.totalPlayTime = 0L;
-        this.isInstalled = false;
+        this.playTime = 0;
+        this.isFavorite = false;
     }
 
     // Getters and Setters
@@ -78,43 +85,27 @@ public class PlayerGameLibrary {
         this.lastPlayTime = lastPlayTime;
     }
 
-    public Long getTotalPlayTime() {
-        return totalPlayTime;
+    public Integer getPlayTime() {
+        return playTime;
     }
 
-    public void setTotalPlayTime(Long totalPlayTime) {
-        this.totalPlayTime = totalPlayTime;
+    public void setPlayTime(Integer playTime) {
+        this.playTime = playTime;
     }
 
-    public boolean isInstalled() {
-        return isInstalled;
+    public Boolean getIsFavorite() {
+        return isFavorite;
     }
 
-    public void setInstalled(boolean installed) {
-        isInstalled = installed;
+    public void setIsFavorite(Boolean isFavorite) {
+        this.isFavorite = isFavorite;
     }
 
-    public String getInstallPath() {
-        return installPath;
+    public String getNotes() {
+        return notes;
     }
 
-    public void setInstallPath(String installPath) {
-        this.installPath = installPath;
-    }
-
-    public String getSavePath() {
-        return savePath;
-    }
-
-    public void setSavePath(String savePath) {
-        this.savePath = savePath;
-    }
-
-    public String getGameSettings() {
-        return gameSettings;
-    }
-
-    public void setGameSettings(String gameSettings) {
-        this.gameSettings = gameSettings;
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 } 
