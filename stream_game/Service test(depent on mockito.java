@@ -6,30 +6,21 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(MockitoExtension.class)  // JUnit 5 的扩展
-public class UserServiceTest {
-
+// 测试Service层（使用Mockito模拟依赖）
+@ExtendWith(MockitoExtension.class)
+public class GameServiceTest {
     @Mock
-    private UserRepository userRepository;
-
+    private GameRepository gameRepository;
+    
     @InjectMocks
-    private UserService userService;
-
+    private GameService gameService;
+    
     @Test
-    public void testGetUserById_Success() {
-        // 模拟依赖行为
-        User mockUser = new User(1L, "Alice");
-        when(userRepository.findById(1L)).thenReturn(Optional.of(mockUser));
-
-        // 调用方法并验证
-        User result = userService.getUserById(1L);
-        assertEquals("Alice", result.getName());
-        verify(userRepository).findById(1L); // 确认方法被调用
-    }
-
-    @Test
-    public void testGetUserById_NotFound() {
-        when(userRepository.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(ResourceNotFoundException.class, () -> userService.getUserById(1L));
+    void testFindGameById() {
+        Game mockGame = new Game(1L, "Cyberpunk 2077");
+        when(gameRepository.findById(1L)).thenReturn(Optional.of(mockGame));
+        
+        Game result = gameService.findGameById(1L);
+        assertEquals("Cyberpunk 2077", result.getName());
     }
 }
