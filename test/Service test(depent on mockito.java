@@ -1,3 +1,7 @@
+package com.example.unit.service;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -5,7 +9,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
-
+//纯业务逻辑测试
+public class CalculatorTest {
+    @Test
+    void testAdd() {
+        Calculator calculator = new Calculator();
+        assertEquals(5, calculator.add(2, 3));
+    }
+}
 // 测试Service层（使用Mockito模拟依赖）
 @ExtendWith(MockitoExtension.class)
 public class GameServiceTest {
