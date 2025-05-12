@@ -146,51 +146,109 @@
         });
 
         // 表单提交处理
-        document.getElementById('gameForm').addEventListener('submit', function(e) {
+        document.getElementById('gameForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const gameData = {
-                title: document.getElementById('gameTitle').value,
-                price: parseFloat(document.getElementById('gamePrice').value),
-                description: document.getElementById('gameDescription').value,
-                tags: Array.from(tagContainer.children).map(tag => tag.textContent),
-                requirements: {
-                    os: document.getElementById('osRequirement').value,
-                    cpu: document.getElementById('cpuRequirement').value,
-                    ram: document.getElementById('ramRequirement').value,
-                    gpu: document.getElementById('gpuRequirement').value,
-                    storage: document.getElementById('storageRequirement').value
-                },
-                // 实际应用中需要上传到服务器
-                banner: imageInput.files[0] ? imageInput.files[0].name : null
-            };
-
-            // 模拟API调用
-            fetch('/api/games', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(gameData)
-            })
-            .then(response => {
-                if (response.ok) {
-                    alert('游戏发布成功！');
-                    this.reset();
-                    tagContainer.innerHTML = '';
-                    imagePreview.src = '';
-                } else {
-                    alert('发布失败，请检查表单内容');
+            // 生成唯一ID（13位时间戳+随机数）
+            const gameId = `uploaded_${Date.now().toString(36)}_${Math.random().toString(36).substr(2, 5)}`;
+            
+            try {
+                // 转换图片为Base64
+                let bannerBase64 = '';
+                const file = document.getElementById('bannerImage').files[0];
+                if (file) {
+                    bannerBase64 = await convertToBase64(file);
                 }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('网络错误，请重试');
-            });
-
-            // 本地存储演示（实际应使用数据库）
-            localStorage.setItem('lastGame', JSON.stringify(gameData));
+        
+                // 构建游戏数据
+                const gameData = {
+                    id: gameId,
+                    title: document.getElementById('gameTitle').value.trim(),
+                    price: parseFloat(document.getElementById('gamePrice').value),
+                    description: document.getElementById('gameDescription').value.trim(),
+                    tags: Array.from(document.querySelectorAll('.game-tag')).map(tag => tag.textContent),
+                    requirements: {
+                        os: document.getElementById('osRequirement').value.trim(),
+                        cpu: document.getElementById('cpuRequirement').value.trim(),
+                        ram: document.getElementById('ramRequirement').value.trim(),
+                        gpu: document.getElementById('gpuRequirement').value.trim(),
+                        storage: document.getElementById('storageRequirement').value.trim()
+                    },
+                    banner: bannerBase64, // 存储为Base64字符串
+                    uploadDate: new Date().toISOString()
+                };
+        
+                // 数据验证
+                if (!validateGameData(gameData)) return;
+        
+                // 保存数据
+                const uploadedGames = GameManager.getUploadedGames();
+                uploadedGames.push(gameData);
+                GameManager.saveUploadedGames(uploadedGames);
+        
+                // 跳转逻辑
+                window.location.href = `game-detail.html?id=${gameId}`;
+            } catch (error) {
+                console.error('上传失败:', error);
+                alert('上传失败，请检查数据格式');
+            }
         });
+        
+        // 图片转Base64
+        function convertToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+        
+        // 数据验证
+        function validateGameData(data) {
+            const errors = [];
+            
+            if (!data.title || data.title.length > 50) {
+                errors.push('标题需在1-50字符之间');
+            }
+            
+            if (isNaN(data.price) || data.price <= 0) {
+                errors.push('价格必须大于0');
+            }
+            
+            if (errors.length > 0) {
+                alert(`数据错误:\n${errors.join('\n')}`);
+                return false;
+            }
+            return true;
+        }
     </script>
+	
+	<footer>
+	    <div class="footer-content">
+	        <div class="footer-section">
+	            <h4>关于我们</h4>
+	            <a href="about.html">联系我们</a>
+	            <a href="team.html">制作人员名单</a>
+	        </div>
+	        <div class="footer-section">
+	            <h4>客户服务</h4>
+	            <a href="https://www.deepseek.com/">帮助中心</a>
+	            <a href="question.html">常见问题</a>
+	        </div>
+	        <div class="footer-section">
+	            <h4>法律条款</h4>
+	            <a href=#>隐私政策</a>
+	            <a href=#>用户协议</a>
+	        </div>
+	        <div class="footer-section">
+	            <h4>关注我们</h4>
+	            <a href="qq.jpg" title="qq">QQ</a>
+	            <a href="weixin.jpg" title="微信">微信</a>
+	            <a href="https://github.com" target="_blank">GitHub</a>
+	        </div>
+	    </div>
+	</footer>
+	
 </body>
 </html>

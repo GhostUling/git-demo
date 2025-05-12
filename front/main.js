@@ -422,3 +422,40 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('.nav-links a[href="index.html"]').classList.add('active');
     }
 });
+
+// 在文件顶部添加
+const UserGameManager = {
+    getUploadedGames: () => JSON.parse(localStorage.getItem('uploadedGames') || '[]'),
+    
+    renderUserGames: () => {
+        const container = document.getElementById('userGamesContainer');
+        const games = this.getUploadedGames();
+        
+        container.innerHTML = games.length ? 
+            games.map(game => `
+                <div class="game-card" data-game-id="${game.id}">
+                    <a href="game-detail.html?id=${game.id}">
+                        <img src="${game.banner}" alt="${game.title}">
+                        <h3>${game.title}</h3>
+                        <p>¥${game.price}</p>
+                        <button class="buy-btn">加入购物车</button>
+                    </a>
+                </div>
+            `).join('') : 
+            '<div class="empty-tip">期待您的推荐！</div>';
+        
+        // 绑定事件
+        container.addEventListener('click', e => {
+            if(e.target.classList.contains('buy-btn')) {
+                const gameId = e.target.closest('.game-card').dataset.gameId;
+                addToCart(gameId);
+            }
+        });
+    }
+}
+
+// 在DOMContentLoaded事件中调用
+document.addEventListener('DOMContentLoaded', () => {
+    UserGameManager.renderUserGames();
+    // 其他原有逻辑...
+});
