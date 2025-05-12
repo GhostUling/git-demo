@@ -60,7 +60,7 @@ body.fade-out {
 }
 
 .nav-links a:hover,
-.nav-links .active {
+.nav-links a.active {
     color: #fff;
 }
 
@@ -691,105 +691,7 @@ footer {
     from { width: 0%; }
     to { width: 90%; }
 }
-/* 支付页面特有样式 */
-        .payment-container {
-            max-width: 1200px;
-            margin: 30px auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-        }
 
-        .order-summary {
-            background: #1a1a1a;
-            padding: 30px;
-            border-radius: 8px;
-            height: fit-content;
-        }
-
-        .payment-form {
-            background: #1a1a1a;
-            padding: 30px;
-            border-radius: 8px;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        .form-label {
-            display: block;
-            color: #fff;
-            margin-bottom: 10px;
-            font-size: 14px;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 12px;
-            background: #252525;
-            border: 1px solid #353535;
-            border-radius: 4px;
-            color: #fff;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-
-        .form-input:focus {
-            border-color: #66c0f4;
-            box-shadow: 0 0 0 2px rgba(102, 192, 244, 0.2);
-            outline: none;
-        }
-
-        .card-icons {
-            display: flex;
-            gap: 15px;
-            margin-top: 10px;
-        }
-
-        .card-icon {
-            width: 40px;
-            filter: grayscale(100%);
-            transition: filter 0.3s ease;
-        }
-
-        .secure-payment {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #a1cd44;
-            margin-top: 20px;
-        }
-
-        .lock-icon {
-            width: 20px;
-            height: 20px;
-        }
-
-        .confirm-btn {
-            width: 100%;
-            padding: 15px;
-            background: #66c0f4;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .confirm-btn:hover {
-            background: #4f9cbd;
-            transform: translateY(-2px);
-        }
-
-        @media (max-width: 768px) {
-            .payment-container {
-                grid-template-columns: 1fr;
-                padding: 20px;
-            }
-        }
-        
         /* 游戏库项悬停效果 */
 .library-item {
     transition: transform 0.3s ease;
@@ -824,4 +726,154 @@ footer {
     .nav-item {
         white-space: nowrap;
     }
+}
+
+ /* 新增上传页面专用样式 */
+        .upload-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            border-radius: 8px;
+        }
+
+        .upload-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #b8b6b4;
+            font-weight: bold;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            background: #323232;
+            border: 1px solid #4a4a4a;
+            color: white;
+            border-radius: 4px;
+        }
+
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .tag-input {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .preview-image {
+            max-width: 400px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+        #requirements-container div {
+            margin-bottom: 15px;
+        }
+
+        .form-submit {
+            grid-column: 1 / -1;
+            text-align: center;
+        }
+
+        #submit-btn {
+            padding: 15px 50px;
+            font-size: 18px;
+            background: #0078f2;
+            transition: background 0.3s;
+        }
+
+        #submit-btn:hover {
+            background: #0060c0;
+        }
+		
+/* 支付成功按钮样式 */
+.slide-btn {
+    display: inline-block;
+    padding: 12px 35px;
+    background: #a1cd44;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.slide-btn:hover {
+    transform: translateY(-3px);
+    background: #8ab434;
+}
+/* 支付页面新增样式 */
+.order-items-container {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.order-item {
+    padding: 12px;
+    background: #252525;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    transition: transform 0.2s ease;
+}
+
+.order-item:hover {
+    transform: translateX(5px);
+}
+
+.item-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.item-index {
+    color: #66c0f4;
+    font-weight: bold;
+    min-width: 25px;
+}
+
+.item-title {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.item-price {
+    color: #a1cd44;
+    font-weight: bold;
+}
+
+.total-amount {
+    font-size: 1.5rem;
+    color: #66c0f4;
+    text-align: right;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid #353535;
+}
+
+.empty-cart {
+    text-align: center;
+    color: #8f98a0;
+    padding: 40px 0;
 }
