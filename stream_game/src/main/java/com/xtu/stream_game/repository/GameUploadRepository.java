@@ -7,8 +7,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface GameUploadRepository extends JpaRepository<GameUpload, Long> {
-    List<GameUpload> findByDeveloperId(Long developerId);
+public interface GameUploadRepository extends JpaRepository<GameUpload, Integer> {
+    List<GameUpload> findByDeveloperDeveloperId(Integer developerId);
     List<GameUpload> findByStatus(GameUpload.UploadStatus status);
-    List<GameUpload> findByDeveloperIdAndStatus(Long developerId, GameUpload.UploadStatus status);
+    List<GameUpload> findByDeveloperDeveloperIdAndStatus(Integer developerId, GameUpload.UploadStatus status);
 } 

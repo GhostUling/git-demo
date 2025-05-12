@@ -13,7 +13,7 @@ import java.util.Date;
 public class  Transaction{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long transactionId;
+    private Integer transactionId;
     @ManyToOne
     @JoinColumn(name = "player_id")
     private Player player;
@@ -29,11 +29,11 @@ public class  Transaction{
     }
 
     // Getters and Setters
-    public Long getTransactionId() {
+    public Integer getTransactionId() {
         return transactionId;
     }
 
-    public void setTransactionId(Long transactionId) {
+    public void setTransactionId(Integer transactionId) {
         this.transactionId = transactionId;
     }
 

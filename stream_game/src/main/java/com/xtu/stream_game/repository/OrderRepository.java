@@ -7,10 +7,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface OrderRepository extends JpaRepository<Order, Long> {
-    List<Order> findByPlayerId(Long playerId);
-    List<Order> findByPlayerIdAndStatus(Long playerId, Order.OrderStatus status);
+public interface OrderRepository extends JpaRepository<Order, Integer> {
+    List<Order> findByPlayerPlayerId(Integer playerId);
+    List<Order> findByPlayerPlayerIdAndStatus(Integer playerId, Order.OrderStatus status);
     List<Order> findByStatus(Order.OrderStatus status);
-    List<Order> findByGameId(Long gameId);
-    boolean existsByPlayerIdAndGameIdAndStatus(Long playerId, Long gameId, Order.OrderStatus status);
+    List<Order> findByGameGameId(Integer gameId);
+    boolean existsByPlayerPlayerIdAndGameGameIdAndStatus(Integer playerId, Integer gameId, Order.OrderStatus status);
 } 

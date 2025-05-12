@@ -5,6 +5,10 @@ USE stream;
 -- 删除现有表（如果存在），按照外键约束顺序
 DROP TABLE IF EXISTS transaction;
 DROP TABLE IF EXISTS player_game;
+DROP TABLE IF EXISTS player_game_library;
+DROP TABLE IF EXISTS game_upload;
+DROP TABLE IF EXISTS email_verification;
+DROP TABLE IF EXISTS orders;
 DROP TABLE IF EXISTS game;
 DROP TABLE IF EXISTS developer;
 DROP TABLE IF EXISTS player;
@@ -65,6 +69,60 @@ CREATE TABLE transaction (
     amount DECIMAL(38, 2),
     transaction_time DATETIME(6),
     payment_status TINYINT,
+    FOREIGN KEY (player_id) REFERENCES player(player_id),
+    FOREIGN KEY (game_id) REFERENCES game(game_id)
+);
+
+-- 创建邮箱验证表
+CREATE TABLE email_verification (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL,
+    verification_code VARCHAR(10) NOT NULL,
+    expiry_time DATETIME(6) NOT NULL,
+    is_verified BIT(1) NOT NULL DEFAULT 0
+);
+
+-- 创建游戏上传表
+CREATE TABLE game_upload (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    developer_id INT NOT NULL,
+    game_name VARCHAR(255) NOT NULL,
+    version VARCHAR(50) NOT NULL,
+    file_path VARCHAR(255) NOT NULL,
+    file_name VARCHAR(255) NOT NULL,
+    file_size BIGINT NOT NULL,
+    file_type VARCHAR(100) NOT NULL,
+    upload_time DATETIME(6) NOT NULL,
+    status VARCHAR(20) NOT NULL,
+    description TEXT,
+    FOREIGN KEY (developer_id) REFERENCES developer(developer_id)
+);
+
+-- 创建玩家游戏库表
+CREATE TABLE player_game_library (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    player_id INT NOT NULL,
+    game_id INT NOT NULL,
+    purchase_time DATETIME(6) NOT NULL,
+    last_play_time DATETIME(6),
+    play_time INT DEFAULT 0,
+    is_favorite BIT(1) DEFAULT 0,
+    notes VARCHAR(500),
+    FOREIGN KEY (player_id) REFERENCES player(player_id),
+    FOREIGN KEY (game_id) REFERENCES game(game_id)
+);
+
+-- 创建订单表
+CREATE TABLE orders (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    player_id INT NOT NULL,
+    game_id INT NOT NULL,
+    amount DECIMAL(38, 2) NOT NULL,
+    status VARCHAR(20) NOT NULL,
+    create_time DATETIME(6) NOT NULL,
+    pay_time DATETIME(6),
+    transaction_id VARCHAR(100),
+    description VARCHAR(500),
     FOREIGN KEY (player_id) REFERENCES player(player_id),
     FOREIGN KEY (game_id) REFERENCES game(game_id)
 );

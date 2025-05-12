@@ -26,7 +26,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public Order createOrder(Long playerId, Long gameId, String description) {
+    public Order createOrder(Integer playerId, Integer gameId, String description) {
         Player player = playerRepository.findById(playerId)
                 .orElseThrow(() -> new RuntimeException("玩家不存在"));
         
@@ -34,7 +34,7 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new RuntimeException("游戏不存在"));
 
         // 检查玩家是否已经购买过该游戏
-        if (orderRepository.existsByPlayerIdAndGameIdAndStatus(playerId, gameId, Order.OrderStatus.PAID)) {
+        if (orderRepository.existsByPlayerPlayerIdAndGameGameIdAndStatus(playerId, gameId, Order.OrderStatus.PAID)) {
             throw new RuntimeException("您已经购买过该游戏");
         }
 
@@ -50,19 +50,19 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order getOrderById(Long orderId) {
+    public Order getOrderById(Integer orderId) {
         return orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("订单不存在"));
     }
 
     @Override
-    public List<Order> getPlayerOrders(Long playerId) {
-        return orderRepository.findByPlayerId(playerId);
+    public List<Order> getPlayerOrders(Integer playerId) {
+        return orderRepository.findByPlayerPlayerId(playerId);
     }
 
     @Override
-    public List<Order> getPlayerOrdersByStatus(Long playerId, Order.OrderStatus status) {
-        return orderRepository.findByPlayerIdAndStatus(playerId, status);
+    public List<Order> getPlayerOrdersByStatus(Integer playerId, Order.OrderStatus status) {
+        return orderRepository.findByPlayerPlayerIdAndStatus(playerId, status);
     }
 
     @Override
@@ -72,7 +72,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public Order updateOrderStatus(Long orderId, Order.OrderStatus status, String transactionId) {
+    public Order updateOrderStatus(Integer orderId, Order.OrderStatus status, String transactionId) {
         Order order = getOrderById(orderId);
         
         if (status == Order.OrderStatus.PAID) {
@@ -86,7 +86,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public Order cancelOrder(Long orderId) {
+    public Order cancelOrder(Integer orderId) {
         Order order = getOrderById(orderId);
         
         if (order.getStatus() != Order.OrderStatus.PENDING) {
@@ -99,7 +99,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public Order refundOrder(Long orderId) {
+    public Order refundOrder(Integer orderId) {
         Order order = getOrderById(orderId);
         
         if (order.getStatus() != Order.OrderStatus.PAID) {
