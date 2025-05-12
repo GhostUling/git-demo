@@ -4,12 +4,12 @@ import com.xtu.stream_game.entity.Order;
 import java.util.List;
 
 public interface OrderService {
-    Order createOrder(Long playerId, Long gameId, String description);
-    Order getOrderById(Long orderId);
-    List<Order> getPlayerOrders(Long playerId);
-    List<Order> getPlayerOrdersByStatus(Long playerId, Order.OrderStatus status);
+    Order createOrder(Integer playerId, Integer gameId, String description);
+    Order getOrderById(Integer orderId);
+    List<Order> getPlayerOrders(Integer playerId);
+    List<Order> getPlayerOrdersByStatus(Integer playerId, Order.OrderStatus status);
     List<Order> getAllOrdersByStatus(Order.OrderStatus status);
-    Order updateOrderStatus(Long orderId, Order.OrderStatus status, String transactionId);
-    Order cancelOrder(Long orderId);
-    Order refundOrder(Long orderId);
+    Order updateOrderStatus(Integer orderId, Order.OrderStatus status, String transactionId);
+    Order cancelOrder(Integer orderId);
+    Order refundOrder(Integer orderId);
 } 

@@ -30,10 +30,10 @@ public class GameUploadServiceImpl implements GameUploadService {
     private String uploadPath;
 
     @Override
-    public GameUpload uploadGame(Long developerId, String gameName, String version, String description, MultipartFile file) {
+    public GameUpload uploadGame(Integer developerId, String gameName, String version, String description, MultipartFile file) {
         try {
             // 获取开发者
-            Developer developer = developerRepository.findById(developerId.intValue())
+            Developer developer = developerRepository.findById(developerId)
                     .orElseThrow(() -> new RuntimeException("开发者不存在"));
 
             // 创建上传目录
@@ -72,8 +72,8 @@ public class GameUploadServiceImpl implements GameUploadService {
     }
 
     @Override
-    public List<GameUpload> getDeveloperUploads(Long developerId) {
-        return gameUploadRepository.findByDeveloperId(developerId);
+    public List<GameUpload> getDeveloperUploads(Integer developerId) {
+        return gameUploadRepository.findByDeveloperDeveloperId(developerId);
     }
 
     @Override
@@ -82,7 +82,7 @@ public class GameUploadServiceImpl implements GameUploadService {
     }
 
     @Override
-    public GameUpload reviewUpload(Long uploadId, boolean approved, String comment) {
+    public GameUpload reviewUpload(Integer uploadId, boolean approved, String comment) {
         GameUpload upload = gameUploadRepository.findById(uploadId)
                 .orElseThrow(() -> new RuntimeException("上传记录不存在"));
 
@@ -93,7 +93,7 @@ public class GameUploadServiceImpl implements GameUploadService {
     }
 
     @Override
-    public GameUpload getUploadDetails(Long uploadId) {
+    public GameUpload getUploadDetails(Integer uploadId) {
         return gameUploadRepository.findById(uploadId)
                 .orElseThrow(() -> new RuntimeException("上传记录不存在"));
     }

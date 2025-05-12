@@ -18,8 +18,8 @@ public class OrderController {
 
     @PostMapping
     public ResponseEntity<?> createOrder(
-            @RequestParam Long playerId,
-            @RequestParam Long gameId,
+            @RequestParam Integer playerId,
+            @RequestParam Integer gameId,
             @RequestParam(required = false) String description) {
         try {
             Order order = orderService.createOrder(playerId, gameId, description);
@@ -33,7 +33,7 @@ public class OrderController {
     }
 
     @GetMapping("/{orderId}")
-    public ResponseEntity<?> getOrder(@PathVariable Long orderId) {
+    public ResponseEntity<?> getOrder(@PathVariable Integer orderId) {
         try {
             Order order = orderService.getOrderById(orderId);
             return ResponseEntity.ok(order);
@@ -46,7 +46,7 @@ public class OrderController {
     }
 
     @GetMapping("/player/{playerId}")
-    public ResponseEntity<?> getPlayerOrders(@PathVariable Long playerId) {
+    public ResponseEntity<?> getPlayerOrders(@PathVariable Integer playerId) {
         try {
             List<Order> orders = orderService.getPlayerOrders(playerId);
             return ResponseEntity.ok(orders);
@@ -60,7 +60,7 @@ public class OrderController {
 
     @GetMapping("/player/{playerId}/status/{status}")
     public ResponseEntity<?> getPlayerOrdersByStatus(
-            @PathVariable Long playerId,
+            @PathVariable Integer playerId,
             @PathVariable Order.OrderStatus status) {
         try {
             List<Order> orders = orderService.getPlayerOrdersByStatus(playerId, status);
@@ -88,7 +88,7 @@ public class OrderController {
 
     @PostMapping("/{orderId}/status")
     public ResponseEntity<?> updateOrderStatus(
-            @PathVariable Long orderId,
+            @PathVariable Integer orderId,
             @RequestBody Map<String, Object> request) {
         try {
             Order.OrderStatus status = Order.OrderStatus.valueOf(request.get("status").toString());
@@ -104,7 +104,7 @@ public class OrderController {
     }
 
     @PostMapping("/{orderId}/cancel")
-    public ResponseEntity<?> cancelOrder(@PathVariable Long orderId) {
+    public ResponseEntity<?> cancelOrder(@PathVariable Integer orderId) {
         try {
             Order order = orderService.cancelOrder(orderId);
             return ResponseEntity.ok(order);
@@ -117,7 +117,7 @@ public class OrderController {
     }
 
     @PostMapping("/{orderId}/refund")
-    public ResponseEntity<?> refundOrder(@PathVariable Long orderId) {
+    public ResponseEntity<?> refundOrder(@PathVariable Integer orderId) {
         try {
             Order order = orderService.refundOrder(orderId);
             return ResponseEntity.ok(order);

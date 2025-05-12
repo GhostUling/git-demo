@@ -26,7 +26,7 @@ public class PlayerGameLibraryServiceImpl implements PlayerGameLibraryService {
 
     @Override
     @Transactional
-    public PlayerGameLibrary addGameToLibrary(Long playerId, Long gameId) {
+    public PlayerGameLibrary addGameToLibrary(Integer playerId, Integer gameId) {
         Player player = playerRepository.findById(playerId)
                 .orElseThrow(() -> new RuntimeException("玩家不存在"));
         
@@ -34,7 +34,7 @@ public class PlayerGameLibraryServiceImpl implements PlayerGameLibraryService {
                 .orElseThrow(() -> new RuntimeException("游戏不存在"));
 
         // 检查游戏是否已在库中
-        if (libraryRepository.findByPlayerIdAndGameId(playerId, gameId).isPresent()) {
+        if (libraryRepository.findByPlayerPlayerIdAndGameGameId(playerId, gameId).isPresent()) {
             throw new RuntimeException("游戏已在库中");
         }
 
@@ -50,34 +50,34 @@ public class PlayerGameLibraryServiceImpl implements PlayerGameLibraryService {
     }
 
     @Override
-    public PlayerGameLibrary getGameFromLibrary(Long playerId, Long gameId) {
-        return libraryRepository.findByPlayerIdAndGameId(playerId, gameId)
+    public PlayerGameLibrary getGameFromLibrary(Integer playerId, Integer gameId) {
+        return libraryRepository.findByPlayerPlayerIdAndGameGameId(playerId, gameId)
                 .orElseThrow(() -> new RuntimeException("游戏不在库中"));
     }
 
     @Override
-    public List<PlayerGameLibrary> getPlayerLibrary(Long playerId) {
-        return libraryRepository.findByPlayerId(playerId);
+    public List<PlayerGameLibrary> getPlayerLibrary(Integer playerId) {
+        return libraryRepository.findByPlayerPlayerId(playerId);
     }
 
     @Override
-    public List<PlayerGameLibrary> getFavoriteGames(Long playerId) {
-        return libraryRepository.findByPlayerIdAndIsFavorite(playerId, true);
+    public List<PlayerGameLibrary> getFavoriteGames(Integer playerId) {
+        return libraryRepository.findByPlayerPlayerIdAndIsFavorite(playerId, true);
     }
 
     @Override
-    public List<PlayerGameLibrary> getRecentlyPlayedGames(Long playerId) {
-        return libraryRepository.findByPlayerIdOrderByLastPlayTimeDesc(playerId);
+    public List<PlayerGameLibrary> getRecentlyPlayedGames(Integer playerId) {
+        return libraryRepository.findByPlayerPlayerIdOrderByLastPlayTimeDesc(playerId);
     }
 
     @Override
-    public List<PlayerGameLibrary> getMostPlayedGames(Long playerId) {
+    public List<PlayerGameLibrary> getMostPlayedGames(Integer playerId) {
         return libraryRepository.findByPlayerIdOrderByPlayTimeDesc(playerId);
     }
 
     @Override
     @Transactional
-    public PlayerGameLibrary updateGamePlayTime(Long playerId, Long gameId, Integer playTime) {
+    public PlayerGameLibrary updateGamePlayTime(Integer playerId, Integer gameId, Integer playTime) {
         PlayerGameLibrary library = getGameFromLibrary(playerId, gameId);
         library.setPlayTime(playTime);
         library.setLastPlayTime(LocalDateTime.now());
@@ -86,7 +86,7 @@ public class PlayerGameLibraryServiceImpl implements PlayerGameLibraryService {
 
     @Override
     @Transactional
-    public PlayerGameLibrary toggleFavorite(Long playerId, Long gameId) {
+    public PlayerGameLibrary toggleFavorite(Integer playerId, Integer gameId) {
         PlayerGameLibrary library = getGameFromLibrary(playerId, gameId);
         library.setIsFavorite(!library.getIsFavorite());
         return libraryRepository.save(library);
@@ -94,7 +94,7 @@ public class PlayerGameLibraryServiceImpl implements PlayerGameLibraryService {
 
     @Override
     @Transactional
-    public PlayerGameLibrary updateGameNotes(Long playerId, Long gameId, String notes) {
+    public PlayerGameLibrary updateGameNotes(Integer playerId, Integer gameId, String notes) {
         PlayerGameLibrary library = getGameFromLibrary(playerId, gameId);
         library.setNotes(notes);
         return libraryRepository.save(library);
@@ -102,7 +102,7 @@ public class PlayerGameLibraryServiceImpl implements PlayerGameLibraryService {
 
     @Override
     @Transactional
-    public void removeGameFromLibrary(Long playerId, Long gameId) {
+    public void removeGameFromLibrary(Integer playerId, Integer gameId) {
         PlayerGameLibrary library = getGameFromLibrary(playerId, gameId);
         libraryRepository.delete(library);
     }

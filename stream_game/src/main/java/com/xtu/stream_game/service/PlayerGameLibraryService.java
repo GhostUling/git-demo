@@ -4,14 +4,14 @@ import com.xtu.stream_game.entity.PlayerGameLibrary;
 import java.util.List;
 
 public interface PlayerGameLibraryService {
-    PlayerGameLibrary addGameToLibrary(Long playerId, Long gameId);
-    PlayerGameLibrary getGameFromLibrary(Long playerId, Long gameId);
-    List<PlayerGameLibrary> getPlayerLibrary(Long playerId);
-    List<PlayerGameLibrary> getFavoriteGames(Long playerId);
-    List<PlayerGameLibrary> getRecentlyPlayedGames(Long playerId);
-    List<PlayerGameLibrary> getMostPlayedGames(Long playerId);
-    PlayerGameLibrary updateGamePlayTime(Long playerId, Long gameId, Integer playTime);
-    PlayerGameLibrary toggleFavorite(Long playerId, Long gameId);
-    PlayerGameLibrary updateGameNotes(Long playerId, Long gameId, String notes);
-    void removeGameFromLibrary(Long playerId, Long gameId);
+    PlayerGameLibrary addGameToLibrary(Integer playerId, Integer gameId);
+    PlayerGameLibrary getGameFromLibrary(Integer playerId, Integer gameId);
+    List<PlayerGameLibrary> getPlayerLibrary(Integer playerId);
+    List<PlayerGameLibrary> getFavoriteGames(Integer playerId);
+    List<PlayerGameLibrary> getRecentlyPlayedGames(Integer playerId);
+    List<PlayerGameLibrary> getMostPlayedGames(Integer playerId);
+    PlayerGameLibrary updateGamePlayTime(Integer playerId, Integer gameId, Integer playTime);
+    PlayerGameLibrary toggleFavorite(Integer playerId, Integer gameId);
+    PlayerGameLibrary updateGameNotes(Integer playerId, Integer gameId, String notes);
+    void removeGameFromLibrary(Integer playerId, Integer gameId);
 } 

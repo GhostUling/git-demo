@@ -1,20 +1,26 @@
 package com.xtu.stream_game.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "email_verification")
 public class EmailVerification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id")
+    private Integer id;
     
+    @Column(name = "email", nullable = false)
     private String email;
+    
+    @Column(name = "verification_code", nullable = false)
     private String verificationCode;
+    
+    @Column(name = "expiry_time", nullable = false)
     private LocalDateTime expiryTime;
+    
+    @Column(name = "is_verified")
     private boolean isVerified;
     
     public EmailVerification() {
@@ -28,11 +34,11 @@ public class EmailVerification {
     }
     
     // Getters and Setters
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
     
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
     

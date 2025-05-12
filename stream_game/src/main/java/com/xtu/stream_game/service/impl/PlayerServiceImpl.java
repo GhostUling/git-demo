@@ -23,7 +23,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public Player getPlayerById(Long playerId) {
+    public Player getPlayerById(Integer playerId) {
         return playerRepository.findById(playerId).orElse(null);
     }
 
@@ -68,7 +68,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public Player updatePlayer(Long playerId, Player playerDetails) {
+    public Player updatePlayer(Integer playerId, Player playerDetails) {
         Optional<Player> playerOpt = playerRepository.findById(playerId);
         
         if (playerOpt.isPresent()) {
@@ -94,7 +94,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public void deletePlayer(Long playerId) {
+    public void deletePlayer(Integer playerId) {
         playerRepository.deleteById(playerId);
     }
 } 

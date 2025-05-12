@@ -165,6 +165,13 @@
 							<label for="reg-email" class="form-label">电子邮箱</label>
 							<input type="email" id="reg-email" class="form-input" placeholder="请输入电子邮箱" required>
 						</div>
+						<div class="form-group verification-code-group">
+							<label for="reg-verification-code" class="form-label">验证码</label>
+							<div style="display: flex; gap: 10px;">
+								<input type="text" id="reg-verification-code" class="form-input" style="flex: 1;" placeholder="请输入验证码" required>
+								<button type="button" id="send-code-btn" class="login-btn" style="width: 120px;">发送验证码</button>
+							</div>
+						</div>
 						<div class="form-group">
 							<label for="reg-password" class="form-label">密码</label>
 							<input type="password" id="reg-password" class="form-input" placeholder="请输入密码" required>
@@ -271,12 +278,65 @@
 				
 				// 注册表单提交
 				const registerForm = document.getElementById('register-form');
+				const sendCodeBtn = document.getElementById('send-code-btn');
+				
+				if (sendCodeBtn) {
+					sendCodeBtn.addEventListener('click', function() {
+						const email = document.getElementById('reg-email').value;
+						if (!email) {
+							alert('请输入邮箱地址');
+							return;
+						}
+						
+						// 禁用按钮，防止重复发送
+						sendCodeBtn.disabled = true;
+						sendCodeBtn.textContent = '发送中...';
+						
+						fetch('http://localhost:8080/api/email-verification/send-code', {
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/json'
+							},
+							body: JSON.stringify({
+								email: email
+							})
+						})
+						.then(response => {
+							if (!response.ok) {
+								throw new Error('发送验证码失败');
+							}
+							return response.json();
+						})
+						.then(data => {
+							alert('验证码已发送到您的邮箱，请查收');
+							
+							// 倒计时60秒后重新启用按钮
+							let countdown = 60;
+							const timer = setInterval(() => {
+								countdown--;
+								sendCodeBtn.textContent = `${countdown}秒后重发`;
+								if (countdown <= 0) {
+									clearInterval(timer);
+									sendCodeBtn.disabled = false;
+									sendCodeBtn.textContent = '发送验证码';
+								}
+							}, 1000);
+						})
+						.catch(error => {
+							alert(error.message);
+							sendCodeBtn.disabled = false;
+							sendCodeBtn.textContent = '发送验证码';
+						});
+					});
+				}
+				
 				if (registerForm) {
 					registerForm.addEventListener('submit', function(e) {
 						e.preventDefault();
 						
 						const username = document.getElementById('reg-username').value;
 						const email = document.getElementById('reg-email').value;
+						const verificationCode = document.getElementById('reg-verification-code').value;
 						const password = document.getElementById('reg-password').value;
 						const confirmPassword = document.getElementById('reg-confirm-password').value;
 						
@@ -285,16 +345,46 @@
 							return;
 						}
 						
-						fetch('http://localhost:8080/api/players/register', {
+						if (!verificationCode) {
+							alert('请输入验证码');
+							return;
+						}
+						
+						// 先验证验证码
+						fetch('http://localhost:8080/api/email-verification/verify', {
 							method: 'POST',
 							headers: {
 								'Content-Type': 'application/json'
 							},
 							body: JSON.stringify({
-								username: username,
 								email: email,
-								password: password
+								code: verificationCode
 							})
+						})
+						.then(response => {
+							if (!response.ok) {
+								throw new Error('验证码验证失败');
+							}
+							return response.json();
+						})
+						.then(data => {
+							if (!data.verified) {
+								throw new Error('验证码无效或已过期');
+							}
+							
+							// 验证码验证成功，继续注册
+							return fetch('http://localhost:8080/api/players/register', {
+								method: 'POST',
+								headers: {
+									'Content-Type': 'application/json'
+								},
+								body: JSON.stringify({
+									username: username,
+									email: email,
+									password: password,
+									verificationCode: verificationCode
+								})
+							});
 						})
 						.then(response => {
 							if (response.status === 409) {

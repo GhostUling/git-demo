@@ -4,6 +4,8 @@ import com.xtu.stream_game.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +13,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/email-verification")
 public class EmailVerificationController {
+
+    private static final Logger logger = LoggerFactory.getLogger(EmailVerificationController.class);
 
     @Autowired
     private EmailService emailService;
@@ -23,13 +27,22 @@ public class EmailVerificationController {
         }
 
         try {
+            logger.info("开始发送验证码到邮箱: {}", email);
             String verificationCode = emailService.generateVerificationCode();
+            logger.info("生成验证码: {}", verificationCode);
+            
             emailService.sendVerificationEmail(email, verificationCode);
+            
+            logger.info("验证码发送成功");
             Map<String, String> response = new HashMap<>();
             response.put("message", "验证码已发送到您的邮箱");
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("发送验证码失败：" + e.getMessage());
+            logger.error("发送验证码失败: {}", e.getMessage(), e);
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "发送验证码失败");
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
         }
     }
 
@@ -43,13 +56,20 @@ public class EmailVerificationController {
         }
 
         try {
+            logger.info("验证邮箱: {}, 验证码: {}", email, code);
             boolean isValid = emailService.verifyEmail(email, code);
+            logger.info("验证结果: {}", isValid ? "成功" : "失败");
+            
             Map<String, Object> response = new HashMap<>();
             response.put("verified", isValid);
             response.put("message", isValid ? "验证成功" : "验证码无效或已过期");
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("验证失败：" + e.getMessage());
+            logger.error("验证失败: {}", e.getMessage(), e);
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "验证失败");
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
         }
     }
 
@@ -62,6 +82,7 @@ public class EmailVerificationController {
             response.put("verified", isVerified);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
+            logger.error("获取验证状态失败: {}", e.getMessage(), e);
             return ResponseEntity.badRequest().body("获取验证状态失败：" + e.getMessage());
         }
     }

@@ -27,7 +27,7 @@ public class GameUploadController {
 
     @PostMapping("/upload")
     public ResponseEntity<?> uploadGame(
-            @RequestParam("developerId") Long developerId,
+            @RequestParam("developerId") Integer developerId,
             @RequestParam("gameName") String gameName,
             @RequestParam("version") String version,
             @RequestParam(value = "description", required = false) String description,
@@ -62,7 +62,7 @@ public class GameUploadController {
     }
 
     @GetMapping("/developer/{developerId}")
-    public ResponseEntity<?> getDeveloperUploads(@PathVariable Long developerId) {
+    public ResponseEntity<?> getDeveloperUploads(@PathVariable Integer developerId) {
         try {
             List<GameUpload> uploads = gameUploadService.getDeveloperUploads(developerId);
             return ResponseEntity.ok(uploads);
@@ -89,7 +89,7 @@ public class GameUploadController {
 
     @PostMapping("/review/{uploadId}")
     public ResponseEntity<?> reviewUpload(
-            @PathVariable Long uploadId,
+            @PathVariable Integer uploadId,
             @RequestBody Map<String, Object> request) {
         try {
             boolean approved = (boolean) request.get("approved");
@@ -105,7 +105,7 @@ public class GameUploadController {
     }
 
     @GetMapping("/{uploadId}")
-    public ResponseEntity<?> getUploadDetails(@PathVariable Long uploadId) {
+    public ResponseEntity<?> getUploadDetails(@PathVariable Integer uploadId) {
         try {
             GameUpload upload = gameUploadService.getUploadDetails(uploadId);
             return ResponseEntity.ok(upload);

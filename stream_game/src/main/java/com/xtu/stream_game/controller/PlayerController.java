@@ -31,7 +31,7 @@ public class PlayerController {
 
     // 根据ID获取玩家
     @GetMapping("/{playerId}")
-    public ResponseEntity<Player> getPlayerById(@PathVariable Long playerId) {
+    public ResponseEntity<Player> getPlayerById(@PathVariable Integer playerId) {
         Player player = playerService.getPlayerById(playerId);
         if (player == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -137,7 +137,7 @@ public class PlayerController {
 
     // 更新玩家信息
     @PutMapping("/{playerId}")
-    public ResponseEntity<Player> updatePlayer(@PathVariable Long playerId, @RequestBody Player playerDetails) {
+    public ResponseEntity<Player> updatePlayer(@PathVariable Integer playerId, @RequestBody Player playerDetails) {
         Player updatedPlayer = playerService.updatePlayer(playerId, playerDetails);
         if (updatedPlayer == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -147,7 +147,7 @@ public class PlayerController {
 
     // 删除玩家
     @DeleteMapping("/{playerId}")
-    public ResponseEntity<Void> deletePlayer(@PathVariable Long playerId) {
+    public ResponseEntity<Void> deletePlayer(@PathVariable Integer playerId) {
         Player player = playerService.getPlayerById(playerId);
         if (player == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

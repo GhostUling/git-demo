@@ -8,7 +8,7 @@ public interface PlayerService {
     List<Player> getAllPlayers();
     
     // 根据ID获取玩家
-    Player getPlayerById(Long playerId);
+    Player getPlayerById(Integer playerId);
     
     // 根据用户名获取玩家
     Player getPlayerByUsername(String username);
@@ -23,8 +23,8 @@ public interface PlayerService {
     Player register(Player player);
     
     // 更新玩家信息
-    Player updatePlayer(Long playerId, Player playerDetails);
+    Player updatePlayer(Integer playerId, Player playerDetails);
     
     // 删除玩家
-    void deletePlayer(Long playerId);
+    void deletePlayer(Integer playerId);
 } 

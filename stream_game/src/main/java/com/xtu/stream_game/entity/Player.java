@@ -13,7 +13,7 @@ public class Player {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "player_id")
-    private Long playerId;
+    private Integer playerId;
     
     @Column(name = "username")
     private String username;
@@ -34,11 +34,11 @@ public class Player {
     private String avatarUrl;
 
     // Getters and Setters
-    public Long getPlayerId() {
+    public Integer getPlayerId() {
         return playerId;
     }
 
-    public void setPlayerId(Long playerId) {
+    public void setPlayerId(Integer playerId) {
         this.playerId = playerId;
     }
 
