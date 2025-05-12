@@ -81,6 +81,7 @@ API文档: `http://localhost:8080/swagger-ui/index.html`
 
 - 用户名: testuser
 - 密码: password123
+- 注意: 使用时不要连接XTU校园网，校园网屏蔽了qq邮箱服务器导致无法发送验证码邮件
 
 ## 开发团队
 
