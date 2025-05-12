@@ -26,7 +26,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Game getGameById(Long gameId) {
+    public Game getGameById(Integer gameId) {
         return gameRepository.findById(gameId).orElse(null);
     }
 
@@ -41,7 +41,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public List<Game> getGamesByDeveloperId(Long developerId) {
+    public List<Game> getGamesByDeveloperId(Integer developerId) {
         return gameRepository.findByDeveloperDeveloperId(developerId);
     }
 
@@ -63,7 +63,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Game updateGame(Long gameId, Game gameDetails) {
+    public Game updateGame(Integer gameId, Game gameDetails) {
         Optional<Game> gameOpt = gameRepository.findById(gameId);
         
         if (gameOpt.isPresent()) {
@@ -101,7 +101,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public void deleteGame(Long gameId) {
+    public void deleteGame(Integer gameId) {
         gameRepository.deleteById(gameId);
     }
 } 

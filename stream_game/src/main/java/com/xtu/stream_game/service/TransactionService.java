@@ -11,7 +11,7 @@ public interface TransactionService {
     List<Transaction> getAllTransactions();
     
     // 根据ID获取交易记录
-    Transaction getTransactionById(Long transactionId);
+    Transaction getTransactionById(Integer transactionId);
     
     // 根据玩家获取交易记录
     List<Transaction> getTransactionsByPlayer(Player player);
@@ -26,8 +26,8 @@ public interface TransactionService {
     Transaction createTransaction(Transaction transaction);
     
     // 更新交易状态
-    Transaction updateTransactionStatus(Long transactionId, PaymentStatus paymentStatus);
+    Transaction updateTransactionStatus(Integer transactionId, PaymentStatus paymentStatus);
     
     // 玩家购买游戏
-    Transaction purchaseGame(Long playerId, Long gameId);
+    Transaction purchaseGame(Integer playerId, Integer gameId);
 } 

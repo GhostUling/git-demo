@@ -15,14 +15,14 @@ public interface GameUploadService {
      * @param file 游戏文件
      * @return 上传记录
      */
-    GameUpload uploadGame(Long developerId, String gameName, String version, String description, MultipartFile file);
+    GameUpload uploadGame(Integer developerId, String gameName, String version, String description, MultipartFile file);
 
     /**
      * 获取开发者的所有上传记录
      * @param developerId 开发者ID
      * @return 上传记录列表
      */
-    List<GameUpload> getDeveloperUploads(Long developerId);
+    List<GameUpload> getDeveloperUploads(Integer developerId);
 
     /**
      * 获取所有待审核的上传记录
@@ -37,12 +37,12 @@ public interface GameUploadService {
      * @param comment 审核意见
      * @return 更新后的上传记录
      */
-    GameUpload reviewUpload(Long uploadId, boolean approved, String comment);
+    GameUpload reviewUpload(Integer uploadId, boolean approved, String comment);
 
     /**
      * 获取上传记录详情
      * @param uploadId 上传记录ID
      * @return 上传记录
      */
-    GameUpload getUploadDetails(Long uploadId);
+    GameUpload getUploadDetails(Integer uploadId);
 } 

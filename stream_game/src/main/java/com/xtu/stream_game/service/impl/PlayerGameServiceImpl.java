@@ -32,7 +32,7 @@ public class PlayerGameServiceImpl implements PlayerGameService {
     }
 
     @Override
-    public List<PlayerGame> getGamesByPlayer(Long playerId) {
+    public List<PlayerGame> getGamesByPlayer(Integer playerId) {
         Optional<Player> playerOpt = playerRepository.findById(playerId);
         if (playerOpt.isPresent()) {
             return playerGameRepository.findByPlayer(playerOpt.get());
@@ -41,7 +41,7 @@ public class PlayerGameServiceImpl implements PlayerGameService {
     }
 
     @Override
-    public PlayerGame getPlayerGame(Long playerId, Long gameId) {
+    public PlayerGame getPlayerGame(Integer playerId, Integer gameId) {
         Optional<Player> playerOpt = playerRepository.findById(playerId);
         Optional<Game> gameOpt = gameRepository.findById(gameId);
         
@@ -52,7 +52,7 @@ public class PlayerGameServiceImpl implements PlayerGameService {
     }
 
     @Override
-    public List<PlayerGame> getPlayerGamesByGameType(Long playerId, String gameType) {
+    public List<PlayerGame> getPlayerGamesByGameType(Integer playerId, String gameType) {
         Optional<Player> playerOpt = playerRepository.findById(playerId);
         if (playerOpt.isPresent()) {
             return playerGameRepository.findByPlayerAndGame_GameType(playerOpt.get(), gameType);
@@ -61,7 +61,7 @@ public class PlayerGameServiceImpl implements PlayerGameService {
     }
 
     @Override
-    public List<PlayerGame> getPlayerGamesSortedByPlayTime(Long playerId) {
+    public List<PlayerGame> getPlayerGamesSortedByPlayTime(Integer playerId) {
         Optional<Player> playerOpt = playerRepository.findById(playerId);
         if (playerOpt.isPresent()) {
             return playerGameRepository.findByPlayerOrderByPlayTimeMinutesDesc(playerOpt.get());
@@ -85,7 +85,7 @@ public class PlayerGameServiceImpl implements PlayerGameService {
     }
 
     @Override
-    public PlayerGame updatePlayerGame(Long id, PlayerGame playerGameDetails) {
+    public PlayerGame updatePlayerGame(Integer id, PlayerGame playerGameDetails) {
         Optional<PlayerGame> playerGameOpt = playerGameRepository.findById(id);
         
         if (playerGameOpt.isPresent()) {
@@ -108,7 +108,7 @@ public class PlayerGameServiceImpl implements PlayerGameService {
     }
 
     @Override
-    public void removePlayerGame(Long id) {
+    public void removePlayerGame(Integer id) {
         playerGameRepository.deleteById(id);
     }
 } 

@@ -36,7 +36,7 @@ public class PlayerGameController {
 
     // 获取特定玩家的所有游戏
     @GetMapping("/player/{playerId}")
-    public ResponseEntity<List<PlayerGame>> getGamesByPlayer(@PathVariable Long playerId) {
+    public ResponseEntity<List<PlayerGame>> getGamesByPlayer(@PathVariable Integer playerId) {
         Player player = playerService.getPlayerById(playerId);
         if (player == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -47,7 +47,7 @@ public class PlayerGameController {
 
     // 获取某游戏的所有玩家记录
     @GetMapping("/game/{gameId}")
-    public ResponseEntity<List<PlayerGame>> getPlayersByGame(@PathVariable Long gameId) {
+    public ResponseEntity<List<PlayerGame>> getPlayersByGame(@PathVariable Integer gameId) {
         Game game = gameService.getGameById(gameId);
         if (game == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -58,7 +58,7 @@ public class PlayerGameController {
 
     // 获取特定玩家的特定游戏记录
     @GetMapping("/player/{playerId}/game/{gameId}")
-    public ResponseEntity<PlayerGame> getPlayerGame(@PathVariable Long playerId, @PathVariable Long gameId) {
+    public ResponseEntity<PlayerGame> getPlayerGame(@PathVariable Integer playerId, @PathVariable Integer gameId) {
         PlayerGame playerGame = playerGameService.getPlayerGame(playerId, gameId);
         if (playerGame == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -69,7 +69,7 @@ public class PlayerGameController {
     // 根据购买时间查找玩家游戏
     @GetMapping("/player/{playerId}/purchase-date")
     public ResponseEntity<List<PlayerGame>> getPlayerGamesByPurchaseDate(
-            @PathVariable Long playerId,
+            @PathVariable Integer playerId,
             @RequestParam String startDate,
             @RequestParam String endDate) {
         // 由于Repository不支持按购买时间查询，此处返回空列表
@@ -79,7 +79,7 @@ public class PlayerGameController {
     // 根据游戏类型查找玩家游戏
     @GetMapping("/player/{playerId}/game-type/{gameType}")
     public ResponseEntity<List<PlayerGame>> getPlayerGamesByGameType(
-            @PathVariable Long playerId, 
+            @PathVariable Integer playerId, 
             @PathVariable String gameType) {
         List<PlayerGame> playerGames = playerGameService.getPlayerGamesByGameType(playerId, gameType);
         return new ResponseEntity<>(playerGames, HttpStatus.OK);
@@ -87,14 +87,14 @@ public class PlayerGameController {
 
     // 按照游玩时长排序获取玩家的游戏
     @GetMapping("/player/{playerId}/sort-by-play-time")
-    public ResponseEntity<List<PlayerGame>> getPlayerGamesSortedByPlayTime(@PathVariable Long playerId) {
+    public ResponseEntity<List<PlayerGame>> getPlayerGamesSortedByPlayTime(@PathVariable Integer playerId) {
         List<PlayerGame> playerGames = playerGameService.getPlayerGamesSortedByPlayTime(playerId);
         return new ResponseEntity<>(playerGames, HttpStatus.OK);
     }
 
     // 按照最后游玩时间排序获取玩家的游戏
     @GetMapping("/player/{playerId}/sort-by-last-played")
-    public ResponseEntity<List<PlayerGame>> getPlayerGamesSortedByLastPlayed(@PathVariable Long playerId) {
+    public ResponseEntity<List<PlayerGame>> getPlayerGamesSortedByLastPlayed(@PathVariable Integer playerId) {
         // 由于Repository不支持按最后游玩时间排序查询，此处返回空列表
         return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
     }
@@ -108,7 +108,7 @@ public class PlayerGameController {
 
     // 更新玩家游戏信息
     @PutMapping("/{id}")
-    public ResponseEntity<PlayerGame> updatePlayerGame(@PathVariable Long id, @RequestBody PlayerGame playerGameDetails) {
+    public ResponseEntity<PlayerGame> updatePlayerGame(@PathVariable Integer id, @RequestBody PlayerGame playerGameDetails) {
         PlayerGame updatedPlayerGame = playerGameService.updatePlayerGame(id, playerGameDetails);
         if (updatedPlayerGame == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -118,7 +118,7 @@ public class PlayerGameController {
 
     // 移除玩家游戏记录
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> removePlayerGame(@PathVariable Long id) {
+    public ResponseEntity<Void> removePlayerGame(@PathVariable Integer id) {
         playerGameService.removePlayerGame(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

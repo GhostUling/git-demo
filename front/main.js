@@ -115,7 +115,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-
     // 购物车逻辑
     if (location.search.includes('reset=1')) {
         localStorage.removeItem('cart');
@@ -393,5 +392,70 @@ function updateNavbar() {
     }
 }
 
+
+
 // 初始化调用
 document.addEventListener('DOMContentLoaded', updateNavbar);
+
+// 动态设置导航栏激活状态
+document.addEventListener('DOMContentLoaded', function() {
+    // 获取当前路径（处理参数和大小写）
+    const currentPage = window.location.pathname.split('/').pop().toLowerCase();
+    const currentPath = currentPage.split('?')[0]; // 移除查询参数
+
+    // 遍历所有导航链接
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        const linkHref = link.getAttribute('href').toLowerCase();
+        const linkPath = linkHref.split('/').pop().split('?')[0];
+
+        // 清除所有激活状态
+        link.classList.remove('active');
+
+        // 匹配路径（排除首页特殊处理）
+        if (linkPath === currentPath) {
+            link.classList.add('active');
+        }
+    });
+
+    // 特殊处理首页激活状态
+    if (currentPath === 'index.html' || currentPath === '') {
+        document.querySelector('.nav-links a[href="index.html"]').classList.add('active');
+    }
+});
+
+// 在文件顶部添加
+const UserGameManager = {
+    getUploadedGames: () => JSON.parse(localStorage.getItem('uploadedGames') || '[]'),
+    
+    renderUserGames: () => {
+        const container = document.getElementById('userGamesContainer');
+        const games = this.getUploadedGames();
+        
+        container.innerHTML = games.length ? 
+            games.map(game => `
+                <div class="game-card" data-game-id="${game.id}">
+                    <a href="game-detail.html?id=${game.id}">
+                        <img src="${game.banner}" alt="${game.title}">
+                        <h3>${game.title}</h3>
+                        <p>¥${game.price}</p>
+                        <button class="buy-btn">加入购物车</button>
+                    </a>
+                </div>
+            `).join('') : 
+            '<div class="empty-tip">期待您的推荐！</div>';
+        
+        // 绑定事件
+        container.addEventListener('click', e => {
+            if(e.target.classList.contains('buy-btn')) {
+                const gameId = e.target.closest('.game-card').dataset.gameId;
+                addToCart(gameId);
+            }
+        });
+    }
+}
+
+// 在DOMContentLoaded事件中调用
+document.addEventListener('DOMContentLoaded', () => {
+    UserGameManager.renderUserGames();
+    // 其他原有逻辑...
+});

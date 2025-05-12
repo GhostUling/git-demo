@@ -18,8 +18,8 @@ public class PlayerGameLibraryController {
 
     @PostMapping("/{playerId}/games/{gameId}")
     public ResponseEntity<?> addGameToLibrary(
-            @PathVariable Long playerId,
-            @PathVariable Long gameId) {
+            @PathVariable Integer playerId,
+            @PathVariable Integer gameId) {
         try {
             PlayerGameLibrary library = libraryService.addGameToLibrary(playerId, gameId);
             return ResponseEntity.ok(library);
@@ -33,8 +33,8 @@ public class PlayerGameLibraryController {
 
     @GetMapping("/{playerId}/games/{gameId}")
     public ResponseEntity<?> getGameFromLibrary(
-            @PathVariable Long playerId,
-            @PathVariable Long gameId) {
+            @PathVariable Integer playerId,
+            @PathVariable Integer gameId) {
         try {
             PlayerGameLibrary library = libraryService.getGameFromLibrary(playerId, gameId);
             return ResponseEntity.ok(library);
@@ -47,7 +47,7 @@ public class PlayerGameLibraryController {
     }
 
     @GetMapping("/{playerId}/games")
-    public ResponseEntity<?> getPlayerLibrary(@PathVariable Long playerId) {
+    public ResponseEntity<?> getPlayerLibrary(@PathVariable Integer playerId) {
         try {
             List<PlayerGameLibrary> library = libraryService.getPlayerLibrary(playerId);
             return ResponseEntity.ok(library);
@@ -60,7 +60,7 @@ public class PlayerGameLibraryController {
     }
 
     @GetMapping("/{playerId}/favorites")
-    public ResponseEntity<?> getFavoriteGames(@PathVariable Long playerId) {
+    public ResponseEntity<?> getFavoriteGames(@PathVariable Integer playerId) {
         try {
             List<PlayerGameLibrary> favorites = libraryService.getFavoriteGames(playerId);
             return ResponseEntity.ok(favorites);
@@ -73,7 +73,7 @@ public class PlayerGameLibraryController {
     }
 
     @GetMapping("/{playerId}/recent")
-    public ResponseEntity<?> getRecentlyPlayedGames(@PathVariable Long playerId) {
+    public ResponseEntity<?> getRecentlyPlayedGames(@PathVariable Integer playerId) {
         try {
             List<PlayerGameLibrary> recent = libraryService.getRecentlyPlayedGames(playerId);
             return ResponseEntity.ok(recent);
@@ -86,7 +86,7 @@ public class PlayerGameLibraryController {
     }
 
     @GetMapping("/{playerId}/most-played")
-    public ResponseEntity<?> getMostPlayedGames(@PathVariable Long playerId) {
+    public ResponseEntity<?> getMostPlayedGames(@PathVariable Integer playerId) {
         try {
             List<PlayerGameLibrary> mostPlayed = libraryService.getMostPlayedGames(playerId);
             return ResponseEntity.ok(mostPlayed);
@@ -100,8 +100,8 @@ public class PlayerGameLibraryController {
 
     @PutMapping("/{playerId}/games/{gameId}/playtime")
     public ResponseEntity<?> updateGamePlayTime(
-            @PathVariable Long playerId,
-            @PathVariable Long gameId,
+            @PathVariable Integer playerId,
+            @PathVariable Integer gameId,
             @RequestBody Map<String, Integer> request) {
         try {
             Integer playTime = request.get("playTime");
@@ -117,8 +117,8 @@ public class PlayerGameLibraryController {
 
     @PutMapping("/{playerId}/games/{gameId}/favorite")
     public ResponseEntity<?> toggleFavorite(
-            @PathVariable Long playerId,
-            @PathVariable Long gameId) {
+            @PathVariable Integer playerId,
+            @PathVariable Integer gameId) {
         try {
             PlayerGameLibrary library = libraryService.toggleFavorite(playerId, gameId);
             return ResponseEntity.ok(library);
@@ -132,8 +132,8 @@ public class PlayerGameLibraryController {
 
     @PutMapping("/{playerId}/games/{gameId}/notes")
     public ResponseEntity<?> updateGameNotes(
-            @PathVariable Long playerId,
-            @PathVariable Long gameId,
+            @PathVariable Integer playerId,
+            @PathVariable Integer gameId,
             @RequestBody Map<String, String> request) {
         try {
             String notes = request.get("notes");
@@ -149,8 +149,8 @@ public class PlayerGameLibraryController {
 
     @DeleteMapping("/{playerId}/games/{gameId}")
     public ResponseEntity<?> removeGameFromLibrary(
-            @PathVariable Long playerId,
-            @PathVariable Long gameId) {
+            @PathVariable Integer playerId,
+            @PathVariable Integer gameId) {
         try {
             libraryService.removeGameFromLibrary(playerId, gameId);
             return ResponseEntity.ok().build();

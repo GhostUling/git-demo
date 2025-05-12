@@ -9,7 +9,7 @@ public interface GameService {
     List<Game> getAllGames();
     
     // 根据ID获取游戏
-    Game getGameById(Long gameId);
+    Game getGameById(Integer gameId);
     
     // 根据名称获取游戏
     Game getGameByName(String name);
@@ -18,7 +18,7 @@ public interface GameService {
     List<Game> getGamesByDeveloper(Developer developer);
     
     // 根据开发者ID获取游戏
-    List<Game> getGamesByDeveloperId(Long developerId);
+    List<Game> getGamesByDeveloperId(Integer developerId);
     
     // 根据游戏类型获取游戏
     List<Game> getGamesByType(String gameType);
@@ -27,8 +27,8 @@ public interface GameService {
     Game addGame(Game game);
     
     // 更新游戏信息
-    Game updateGame(Long gameId, Game gameDetails);
+    Game updateGame(Integer gameId, Game gameDetails);
     
     // 删除游戏
-    void deleteGame(Long gameId);
+    void deleteGame(Integer gameId);
 } 

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface GameRepository extends JpaRepository<Game, Long> {
+public interface GameRepository extends JpaRepository<Game, Integer> {
     // 根据游戏名称查找游戏
     Game findByGameName(String gameName);
     
@@ -15,7 +15,7 @@ public interface GameRepository extends JpaRepository<Game, Long> {
     List<Game> findByDeveloper(Developer developer);
     
     // 根据开发者ID查找游戏
-    List<Game> findByDeveloperDeveloperId(Long developerId);
+    List<Game> findByDeveloperDeveloperId(Integer developerId);
     
     // 根据游戏类型查找游戏
     List<Game> findByGameType(String gameType);
