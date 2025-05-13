@@ -11,7 +11,7 @@ class StreamGameApplicationTests {
 	}
 
 }
-@SpringBootTest(properties = {
-    "game.upload.max-size=10MB",
-    "game.upload.allowed-types=application/zip"
-})
+// @SpringBootTest(properties = {
+//     "game.upload.max-size=10MB",
+//     "game.upload.allowed-types=application/zip"
+// })

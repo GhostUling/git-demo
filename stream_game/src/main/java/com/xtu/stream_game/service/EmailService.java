@@ -17,6 +17,14 @@ public interface EmailService {
     boolean verifyEmail(String email, String verificationCode);
 
     /**
+     * 检查邮箱验证码是否有效，但不修改验证状态
+     * @param email 邮箱
+     * @param verificationCode 验证码
+     * @return 验证码是否有效
+     */
+    boolean checkEmailAndVerificationCode(String email, String verificationCode);
+
+    /**
      * 检查邮箱是否已验证
      * @param email 邮箱
      * @return 是否已验证

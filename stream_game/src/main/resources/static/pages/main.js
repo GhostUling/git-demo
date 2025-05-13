@@ -1,8 +1,5 @@
 // JavaScript 文件 (assets/js/main.js)
 document.addEventListener('DOMContentLoaded', function() {
-    // 检查用户登录状态并更新导航栏
-    checkLoginStatus();
-
     // 全局API基础URL
     const API_BASE_URL = 'http://localhost:8080/api';
 
@@ -118,7 +115,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-
     // 购物车逻辑
     if (location.search.includes('reset=1')) {
         localStorage.removeItem('cart');
@@ -361,59 +357,107 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// 检查登录状态
-function checkLoginStatus() {
-    const currentPlayer = JSON.parse(localStorage.getItem('currentPlayer'));
-    const loginLinks = document.querySelectorAll('.nav-links a[href*="login"]');
-    const profileLinks = document.querySelectorAll('.nav-links a[href*="profile"]');
+
+// ================= 导航栏动态控制 =================
+function updateNavbar() {
+    const navLinks = document.getElementById('nav-links');
+    const currentUser = JSON.parse(sessionStorage.getItem('currentPlayer'));
     
-    if (currentPlayer) {
-        // 已登录状态
-        loginLinks.forEach(link => {
-            link.textContent = '退出登录';
-            link.href = '#';
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                localStorage.removeItem('currentPlayer');
-                window.location.reload();
-            });
-        });
-        
-        profileLinks.forEach(link => {
-            if (link.querySelector('.user-avatar')) return;
-            
-            const avatar = document.createElement('img');
-            avatar.src = currentPlayer.avatar || '../assets/images/default-avatar.png';
-            avatar.alt = currentPlayer.username;
-            avatar.className = 'user-avatar';
-            
-            const username = document.createTextNode(currentPlayer.username);
-            
-            link.innerHTML = '';
-            link.appendChild(avatar);
-            link.appendChild(username);
-        });
+    // 基础链接
+    let linksHtml = `
+        <a href="index.html" class="${location.pathname.endsWith('index.html') ? 'active' : ''}">商城</a>
+        <a href="cart.html" class="${location.pathname.endsWith('cart.html') ? 'active' : ''}">购物车 <span class="cart-counter">0</span></a>
+        <a href="about.html" class="${location.pathname.endsWith('about.html') ? 'active' : ''}">关于</a>
+    `;
+
+    // 根据登录状态显示不同内容
+    if (currentUser) {
+        linksHtml += `
+            <a href="profile.html" class="${location.pathname.endsWith('profile.html') ? 'active' : ''}">个人中心</a>
+            <a href="#" id="logout-btn">退出</a>
+        `;
     } else {
-        // 未登录状态
-        loginLinks.forEach(link => {
-            link.textContent = '登录/注册';
-            link.href = 'login.html';
+        linksHtml += `<a href="login.html" class="${location.pathname.endsWith('login.html') ? 'active' : ''}">登录/注册</a>`;
+    }
+
+    navLinks.innerHTML = linksHtml;
+    
+    // 绑定退出事件
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            sessionStorage.removeItem('currentPlayer');
+            window.location.href = 'login.html';
         });
     }
 }
 
-// 游戏管理器对象
+
+
+// 初始化调用
+document.addEventListener('DOMContentLoaded', updateNavbar);
+
+// 动态设置导航栏激活状态
+document.addEventListener('DOMContentLoaded', function() {
+    // 获取当前路径（处理参数和大小写）
+    const currentPage = window.location.pathname.split('/').pop().toLowerCase();
+    const currentPath = currentPage.split('?')[0]; // 移除查询参数
+
+    // 遍历所有导航链接
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        const linkHref = link.getAttribute('href').toLowerCase();
+        const linkPath = linkHref.split('/').pop().split('?')[0];
+
+        // 清除所有激活状态
+        link.classList.remove('active');
+
+        // 匹配路径（排除首页特殊处理）
+        if (linkPath === currentPath) {
+            link.classList.add('active');
+        }
+    });
+
+    // 特殊处理首页激活状态
+    if (currentPath === 'index.html' || currentPath === '') {
+        document.querySelector('.nav-links a[href="index.html"]').classList.add('active');
+    }
+});
+
+// 在文件顶部添加
+const UserGameManager = {
+    getUploadedGames: () => JSON.parse(localStorage.getItem('uploadedGames') || '[]'),
+    
+    renderUserGames: function() {
+        const container = document.getElementById('userGamesContainer');
+        const games = this.getUploadedGames();
+        
+        container.innerHTML = games.length ? 
+            games.map(game => `
+                <div class="game-card" data-game-id="${game.id}">
+                    <a href="game-detail.html?id=${game.id}">
+                        <img src="${game.banner}" alt="${game.title}">
+                        <h3>${game.title}</h3>
+                        <p>¥${game.price}</p>
+                        <button class="buy-btn">加入购物车</button>
+                    </a>
+                </div>
+            `).join('') : 
+            '<div class="empty-tip">期待您的推荐！</div>';
+        
+        // 绑定事件
+        container.addEventListener('click', e => {
+            if(e.target.classList.contains('buy-btn')) {
+                const gameId = e.target.closest('.game-card').dataset.gameId;
+                addToCart(gameId);
+            }
+        });
+    }
+}
+
+// 添加游戏管理器
 const GameManager = {
-    // 上传游戏方法
     uploadGame: function(gameData) {
         return new Promise((resolve, reject) => {
-            // 检查用户是否登录
-            const currentPlayer = JSON.parse(localStorage.getItem('currentPlayer'));
-            if (!currentPlayer) {
-                reject(new Error('请先登录'));
-                return;
-            }
-            
             // 获取已上传的游戏列表
             const uploadedGames = JSON.parse(localStorage.getItem('uploadedGames') || '[]');
             
@@ -423,8 +467,6 @@ const GameManager = {
             // 创建新的游戏对象
             const newGame = {
                 id: newGameId,
-                developerId: currentPlayer.id,
-                developerName: currentPlayer.username,
                 ...gameData,
                 uploadDate: new Date().toISOString()
             };
@@ -440,16 +482,11 @@ const GameManager = {
                 reject(error);
             }
         });
-    },
-    
-    // 获取已上传游戏列表
-    getUploadedGames: function() {
-        return JSON.parse(localStorage.getItem('uploadedGames') || '[]');
-    },
-    
-    // 通过ID获取游戏
-    getGameById: function(gameId) {
-        const games = this.getUploadedGames();
-        return games.find(game => game.id === gameId);
     }
 };
+
+// 在DOMContentLoaded事件中调用
+document.addEventListener('DOMContentLoaded', () => {
+    UserGameManager.renderUserGames();
+    // 其他原有逻辑...
+});

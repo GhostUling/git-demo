@@ -370,89 +370,83 @@ footer {
 }
 
 .game-card {
-    background: #1b2838;
+    background: #1a1a1a;
     border-radius: 8px;
     overflow: hidden;
     transition: transform 0.3s ease;
-    width: 300px;
-    margin: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    animation: cardEntrance 0.6s ease-out forwards;
+    opacity: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.game-card:hover {
-    transform: translateY(-5px);
+@keyframes cardEntrance {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.game-card a {
-    text-decoration: none;
-    color: inherit;
-    display: block;
-}
-
-.game-card img {
+.game-image {
     width: 100%;
-    height: 150px;
+    height: 180px;
     object-fit: cover;
-    object-position: center;
-    display: block;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.game-card h3 {
-    padding: 15px 15px 5px;
-    margin: 0;
-    font-size: 1.1em;
+.game-image:hover {
+    transform: scale(1.05);
+}
+
+.game-info {
+    padding: 20px;
+}
+
+.game-title {
     color: #fff;
-    white-space: nowrap;
+    font-size: 16px;
+    margin-bottom: 15px;
+    height: 40px;
     overflow: hidden;
-    text-overflow: ellipsis;
 }
 
-.game-card p {
-    padding: 0 15px 15px;
-    margin: 0;
+.game-price {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.price {
     color: #66c0f4;
     font-weight: bold;
+    font-size: 18px;
 }
 
-.game-card .buy-btn {
-    width: 100%;
-    padding: 10px;
+.discount {
+    color: #a1cd44;
+    font-size: 14px;
+    text-decoration: line-through;
+    margin-right: 8px;
+}
+
+.buy-btn {
     background: #66c0f4;
-    border: none;
     color: #fff;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
-
-.game-card .buy-btn:hover {
-    background: #1999ff;
-}
-
-/* 游戏列表容器样式 */
-.games-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-/* 预览图片样式 */
-.preview-image {
-    max-width: 100%;
-    height: 200px;
-    object-fit: cover;
-    object-position: center;
-    margin-top: 10px;
+    border: none;
+    padding: 10px 25px;
     border-radius: 4px;
-    display: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.preview-image:not([src=""]) {
-    display: block;
+.buy-btn:hover {
+    background: #4f9cbd;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 192, 244, 0.3);
 }
 
 /* 游戏详情页 */
@@ -889,16 +883,13 @@ footer {
     margin: 40px 0;
     padding: 20px;
     background: #1a1a1a;
-    max-width: 1200px;
-    margin: 40px auto;
 }
 
 #userGamesContainer {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 20px;
     padding: 15px;
-    justify-items: center;
 }
 
 .empty-tip {

@@ -30,7 +30,7 @@ public class PlayerController {
     }
 
     // 根据ID获取玩家
-    @GetMapping("/{playerId}")
+    @GetMapping("/id/{playerId}")
     public ResponseEntity<Player> getPlayerById(@PathVariable Integer playerId) {
         Player player = playerService.getPlayerById(playerId);
         if (player == null) {
@@ -99,15 +99,31 @@ public class PlayerController {
     public ResponseEntity<Player> register(@RequestBody Map<String, Object> request) {
         String email = (String) request.get("email");
         String verificationCode = (String) request.get("verificationCode");
+        String username = (String) request.get("username");
+        String password = (String) request.get("password");
         
-        // 验证邮箱
-        if (!emailService.verifyEmail(email, verificationCode)) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        if (email == null || verificationCode == null || username == null || password == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         
+        // 检查用户名是否已存在
+        if (playerService.getPlayerByUsername(username) != null) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+        
+        // 检查邮箱是否已存在
+        if (playerService.getPlayerByEmail(email) != null) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+        
+        // 检查验证码是否有效（不验证，因为前端已经验证过）
+        if (!emailService.checkEmailAndVerificationCode(email, verificationCode)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
         Player player = new Player();
-        player.setUsername((String) request.get("username"));
-        player.setPassword((String) request.get("password"));
+        player.setUsername(username);
+        player.setPassword(password);
         player.setEmail(email);
         
         Player registeredPlayer = playerService.register(player);
@@ -136,7 +152,7 @@ public class PlayerController {
     }
 
     // 更新玩家信息
-    @PutMapping("/{playerId}")
+    @PutMapping("/id/{playerId}")
     public ResponseEntity<Player> updatePlayer(@PathVariable Integer playerId, @RequestBody Player playerDetails) {
         Player updatedPlayer = playerService.updatePlayer(playerId, playerDetails);
         if (updatedPlayer == null) {
@@ -146,7 +162,7 @@ public class PlayerController {
     }
 
     // 删除玩家
-    @DeleteMapping("/{playerId}")
+    @DeleteMapping("/id/{playerId}")
     public ResponseEntity<Void> deletePlayer(@PathVariable Integer playerId) {
         Player player = playerService.getPlayerById(playerId);
         if (player == null) {

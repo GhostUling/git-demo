@@ -52,6 +52,7 @@ public class EmailVerificationController {
         String code = request.get("code");
 
         if (email == null || code == null) {
+            logger.warn("邮箱或验证码为空");
             return ResponseEntity.badRequest().body("邮箱和验证码不能为空");
         }
 
@@ -63,6 +64,11 @@ public class EmailVerificationController {
             Map<String, Object> response = new HashMap<>();
             response.put("verified", isValid);
             response.put("message", isValid ? "验证成功" : "验证码无效或已过期");
+            
+            if (!isValid) {
+                logger.warn("验证失败，可能的原因: 验证码无效、已过期或已被使用");
+            }
+            
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             logger.error("验证失败: {}", e.getMessage(), e);

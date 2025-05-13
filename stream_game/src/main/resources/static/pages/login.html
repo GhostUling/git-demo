@@ -207,8 +207,8 @@
 				</div>
 				<div class="footer-section">
 					<h4>关注我们</h4>
-					<a href="#">QQ</a>
-					<a href="#">微信</a>
+					<a href="images/qq.jpg">QQ</a>
+					<a href="images/weixin.jpg">微信</a>
 					<a href="#">GitHub</a>
 				</div>
 			</div>
@@ -368,6 +368,7 @@
 							return response.json();
 						})
 						.then(data => {
+							console.log('验证码验证响应:', data);
 							if (!data.verified) {
 								throw new Error('验证码无效或已过期');
 							}
@@ -387,6 +388,11 @@
 							});
 						})
 						.then(response => {
+							// 检查是否是第二个fetch的响应
+							if (!(response instanceof Response)) {
+								return response; // 这是第一个fetch的结果，直接传递给下一个then
+							}
+							
 							if (response.status === 409) {
 								throw new Error('用户名或邮箱已存在');
 							}
@@ -396,12 +402,19 @@
 							return response.json();
 						})
 						.then(player => {
+							// 确保这是一个Player对象
+							if (!player || !player.username) {
+								// 可能是第一个fetch的结果，不是player对象
+								throw new Error('注册过程出错，请重试');
+							}
+							
 							alert('注册成功，请登录');
 							// 切换到登录表单
 							registerFormContainer.style.display = 'none';
 							loginFormContainer.style.display = 'block';
 						})
 						.catch(error => {
+							console.error('注册流程错误:', error);
 							alert(error.message);
 						});
 					});

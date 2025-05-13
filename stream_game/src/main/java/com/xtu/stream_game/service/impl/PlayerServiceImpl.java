@@ -44,18 +44,19 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     public Player register(Player player) {
+
         // 检查用户名是否已存在
         Player existingPlayer = playerRepository.findByUsername(player.getUsername());
         if (existingPlayer != null) {
             return null; // 用户名已存在
         }
-        
+
         // 检查邮箱是否已存在
         existingPlayer = playerRepository.findByEmail(player.getEmail());
         if (existingPlayer != null) {
             return null; // 邮箱已存在
         }
-        
+
         // 设置注册时间
         player.setRegistrationTime(new Date());
         
