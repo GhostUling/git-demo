@@ -427,7 +427,7 @@ document.addEventListener('DOMContentLoaded', function() {
 const UserGameManager = {
     getUploadedGames: () => JSON.parse(localStorage.getItem('uploadedGames') || '[]'),
     
-    renderUserGames: () => {
+    renderUserGames: function() {
         const container = document.getElementById('userGamesContainer');
         const games = this.getUploadedGames();
         
@@ -453,6 +453,37 @@ const UserGameManager = {
         });
     }
 }
+
+// 添加游戏管理器
+const GameManager = {
+    uploadGame: function(gameData) {
+        return new Promise((resolve, reject) => {
+            // 获取已上传的游戏列表
+            const uploadedGames = JSON.parse(localStorage.getItem('uploadedGames') || '[]');
+            
+            // 生成新的游戏ID
+            const newGameId = 'game_' + Date.now();
+            
+            // 创建新的游戏对象
+            const newGame = {
+                id: newGameId,
+                ...gameData,
+                uploadDate: new Date().toISOString()
+            };
+            
+            // 添加到已上传游戏列表
+            uploadedGames.push(newGame);
+            
+            // 保存到localStorage
+            try {
+                localStorage.setItem('uploadedGames', JSON.stringify(uploadedGames));
+                resolve(newGame);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+};
 
 // 在DOMContentLoaded事件中调用
 document.addEventListener('DOMContentLoaded', () => {

@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>发布游戏</title>
     <link rel="stylesheet" href="style.css">
+    <script src="main.js"></script>
 </head>
 <body>
     <nav class="navbar">
@@ -146,51 +147,49 @@
         });
 
         // 表单提交处理
-        document.getElementById('gameForm').addEventListener('submit', async function(e) {
+        const form = document.getElementById('gameForm');
+        form.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // 生成唯一ID（13位时间戳+随机数）
-            const gameId = `uploaded_${Date.now().toString(36)}_${Math.random().toString(36).substr(2, 5)}`;
+            // 验证表单数据
+            const gameData = {
+                title: document.getElementById('gameTitle').value,
+                price: parseFloat(document.getElementById('gamePrice').value),
+                description: document.getElementById('gameDescription').value,
+                tags: Array.from(document.querySelectorAll('.game-tag')).map(tag => tag.textContent),
+                requirements: {
+                    os: document.getElementById('osRequirement').value,
+                    cpu: document.getElementById('cpuRequirement').value,
+                    ram: document.getElementById('ramRequirement').value,
+                    gpu: document.getElementById('gpuRequirement').value,
+                    storage: document.getElementById('storageRequirement').value
+                }
+            };
+
+            // 验证数据
+            if (!validateGameData(gameData)) {
+                return;
+            }
+
+            // 处理图片文件
+            const bannerFile = document.getElementById('bannerImage').files[0];
+            if (bannerFile) {
+                try {
+                    gameData.banner = await convertToBase64(bannerFile);
+                } catch (error) {
+                    console.error('图片处理失败:', error);
+                    alert('图片处理失败，请重试');
+                    return;
+                }
+            }
             
             try {
-                // 转换图片为Base64
-                let bannerBase64 = '';
-                const file = document.getElementById('bannerImage').files[0];
-                if (file) {
-                    bannerBase64 = await convertToBase64(file);
-                }
-        
-                // 构建游戏数据
-                const gameData = {
-                    id: gameId,
-                    title: document.getElementById('gameTitle').value.trim(),
-                    price: parseFloat(document.getElementById('gamePrice').value),
-                    description: document.getElementById('gameDescription').value.trim(),
-                    tags: Array.from(document.querySelectorAll('.game-tag')).map(tag => tag.textContent),
-                    requirements: {
-                        os: document.getElementById('osRequirement').value.trim(),
-                        cpu: document.getElementById('cpuRequirement').value.trim(),
-                        ram: document.getElementById('ramRequirement').value.trim(),
-                        gpu: document.getElementById('gpuRequirement').value.trim(),
-                        storage: document.getElementById('storageRequirement').value.trim()
-                    },
-                    banner: bannerBase64, // 存储为Base64字符串
-                    uploadDate: new Date().toISOString()
-                };
-        
-                // 数据验证
-                if (!validateGameData(gameData)) return;
-        
-                // 保存数据
-                const uploadedGames = GameManager.getUploadedGames();
-                uploadedGames.push(gameData);
-                GameManager.saveUploadedGames(uploadedGames);
-        
-                // 跳转逻辑
-                window.location.href = `game-detail.html?id=${gameId}`;
+                await GameManager.uploadGame(gameData);
+                alert('游戏上传成功！');
+                window.location.href = 'profile.html'; // 上传成功后跳转到个人中心
             } catch (error) {
                 console.error('上传失败:', error);
-                alert('上传失败，请检查数据格式');
+                alert('上传失败，请重试');
             }
         });
         

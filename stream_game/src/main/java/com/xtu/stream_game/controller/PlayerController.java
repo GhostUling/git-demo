@@ -30,7 +30,7 @@ public class PlayerController {
     }
 
     // 根据ID获取玩家
-    @GetMapping("/{playerId}")
+    @GetMapping("/id/{playerId}")
     public ResponseEntity<Player> getPlayerById(@PathVariable Integer playerId) {
         Player player = playerService.getPlayerById(playerId);
         if (player == null) {
@@ -104,7 +104,7 @@ public class PlayerController {
         if (!emailService.verifyEmail(email, verificationCode)) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-        
+
         Player player = new Player();
         player.setUsername((String) request.get("username"));
         player.setPassword((String) request.get("password"));
@@ -136,7 +136,7 @@ public class PlayerController {
     }
 
     // 更新玩家信息
-    @PutMapping("/{playerId}")
+    @PutMapping("/id/{playerId}")
     public ResponseEntity<Player> updatePlayer(@PathVariable Integer playerId, @RequestBody Player playerDetails) {
         Player updatedPlayer = playerService.updatePlayer(playerId, playerDetails);
         if (updatedPlayer == null) {
@@ -146,7 +146,7 @@ public class PlayerController {
     }
 
     // 删除玩家
-    @DeleteMapping("/{playerId}")
+    @DeleteMapping("/id/{playerId}")
     public ResponseEntity<Void> deletePlayer(@PathVariable Integer playerId) {
         Player player = playerService.getPlayerById(playerId);
         if (player == null) {
