@@ -134,28 +134,45 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateCartDisplay() {
         try {
             // 更新购物车计数器
-            document.querySelectorAll('.cart-counter').forEach(counter => {
-                counter.textContent = cart.count;
-            });
-
+        document.querySelectorAll('.cart-counter').forEach(counter => {
+            counter.textContent = cart.count;
+        });
+        
             // 更新购物车总价
-            document.querySelectorAll('.cart-total h3').forEach(totalElement => {
-                totalElement.textContent = `总计：¥ ${cart.total.toFixed(2)}`;
-            });
-
+        document.querySelectorAll('.cart-total h3').forEach(totalElement => {
+            totalElement.textContent = `总计：¥ ${cart.total.toFixed(2)}`;
+        });
+        
             // 更新购物车列表
             const cartItems = document.querySelector('.cart-items');
             if (cartItems) {
-                cartItems.innerHTML = cart.items.map(item => `
-                    <div class="cart-item" data-item-id="${item.id}">
-                        <img src="${item.banner}" alt="${item.title}">
-                        <div class="item-info">
-                            <h3>${item.title}</h3>
-                            <p>¥${item.price.toFixed(2)}</p>
+                cartItems.innerHTML = cart.items.map(item => {
+                    // 处理图片路径
+                    let imgSrc;
+                    if (item.banner) {
+                        if (item.banner.startsWith('data:')) {
+                            imgSrc = item.banner;
+                        } else if (item.banner.startsWith('assets/')) {
+                            imgSrc = item.banner;
+                        } else {
+                            imgSrc = item.banner;
+                        }
+                    } else {
+                        // 如果没有banner，使用游戏标题作为图片文件名
+                        imgSrc = `${item.title}.jpg`;
+                    }
+
+                    return `
+                        <div class="cart-item" data-item-id="${item.id}">
+                            <img src="${imgSrc}" alt="${item.title}">
+                            <div class="item-info">
+                                <h3>${item.title}</h3>
+                                <p>¥${item.price.toFixed(2)}</p>
+                            </div>
+                            <button class="remove-btn">移除</button>
                         </div>
-                        <button class="remove-btn">移除</button>
-                    </div>
-                `).join('') || '<div class="empty-cart">购物车是空的</div>';
+                    `;
+                }).join('') || '<div class="empty-cart">购物车是空的</div>';
             }
         } catch (error) {
             console.error('更新购物车显示失败:', error);
@@ -458,10 +475,10 @@ const UserGameManager = {
         container.innerHTML = games.length ? 
             games.map(game => `
                 <div class="game-card" data-game-id="${game.id}">
-                    <img src="${game.banner}" alt="${game.title}">
+                        <img src="${game.banner}" alt="${game.title}">
                     <h3 class="game-title">${game.title}</h3>
                     <p class="price">¥${game.price}</p>
-                    <button class="buy-btn">加入购物车</button>
+                        <button class="buy-btn">加入购物车</button>
                 </div>
             `).join('') : 
             '<div class="empty-tip">期待您的推荐！</div>';
@@ -677,16 +694,33 @@ const CartManager = {
             // 更新购物车列表
             const cartItems = document.querySelector('.cart-items');
             if (cartItems) {
-                cartItems.innerHTML = this.cart.items.map(item => `
-                    <div class="cart-item" data-item-id="${item.id}">
-                        <img src="${item.banner}" alt="${item.title}">
-                        <div class="item-info">
-                            <h3>${item.title}</h3>
-                            <p>¥${item.price.toFixed(2)}</p>
+                cartItems.innerHTML = this.cart.items.map(item => {
+                    // 处理图片路径
+                    let imgSrc;
+                    if (item.banner) {
+                        if (item.banner.startsWith('data:')) {
+                            imgSrc = item.banner;
+                        } else if (item.banner.startsWith('assets/')) {
+                            imgSrc = item.banner;
+                        } else {
+                            imgSrc = item.banner;
+                        }
+                    } else {
+                        // 如果没有banner，使用游戏标题作为图片文件名
+                        imgSrc = `${item.title}.jpg`;
+                    }
+
+                    return `
+                        <div class="cart-item" data-item-id="${item.id}">
+                            <img src="${imgSrc}" alt="${item.title}">
+                            <div class="item-info">
+                                <h3>${item.title}</h3>
+                                <p>¥${item.price.toFixed(2)}</p>
+                            </div>
+                            <button class="remove-btn">移除</button>
                         </div>
-                        <button class="remove-btn">移除</button>
-                    </div>
-                `).join('') || '<div class="empty-cart">购物车是空的</div>';
+                    `;
+                }).join('') || '<div class="empty-cart">购物车是空的</div>';
             }
         } catch (error) {
             console.error('更新购物车显示失败:', error);
@@ -775,15 +809,25 @@ const CartManager = {
                 return;
             }
 
+            // 获取游戏卡片中的图片元素
+            const gameImage = gameCard.querySelector('img');
+            if (!gameImage) {
+                console.error('未找到游戏图片元素');
+                return;
+            }
+
             const flyItem = this.createFlyItem(buyBtn, gameCard);
             
             this.animateToCart(flyItem, () => {
                 this.cart.count++;
+                // 使用游戏卡片中的图片路径，如果不存在则使用默认图片
+                const banner = gameImage.src || 'assets/images/default-game.jpg';
+                
                 this.cart.items.push({
                     id: game.id,
                     title: game.title,
                     price: game.price,
-                    banner: game.banner
+                    banner: banner
                 });
                 this.cart.total += game.price;
 
