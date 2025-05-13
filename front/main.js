@@ -3,6 +3,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // 全局API基础URL
     const API_BASE_URL = 'http://localhost:8080/api';
 
+    // 全局变量
+    let cart = JSON.parse(localStorage.getItem('cart')) || {
+        count: 0,
+        items: [],
+        total: 0
+    };
+
     // 页面过渡逻辑
     const links = document.querySelectorAll('a');
     links.forEach(link => {
@@ -119,39 +126,52 @@ document.addEventListener('DOMContentLoaded', function() {
     if (location.search.includes('reset=1')) {
         localStorage.removeItem('cart');
     }
-    let cart = JSON.parse(localStorage.getItem('cart')) || {
-        count: 0,
-        items: [],
-        total: 0
-    };
     const emptyCart = document.querySelector('.empty-cart');
     const cartHeader = document.querySelector('.cart-header');
     const cartTotal = document.querySelector('.cart-total');
                     
-    // 统一更新购物车显示
+    // 更新购物车显示
     function updateCartDisplay() {
-        // 更新计数器
-        document.querySelectorAll('.cart-counter').forEach(counter => {
-            counter.textContent = cart.count;
-        });
-        
-        // 更新总价
-        document.querySelectorAll('.cart-total h3').forEach(totalElement => {
-            totalElement.textContent = `总计：¥ ${cart.total.toFixed(2)}`;
-        });
-        
-        // 更新购物车商品列表
-        renderCartItems();
+        try {
+            // 更新购物车计数器
+            document.querySelectorAll('.cart-counter').forEach(counter => {
+                counter.textContent = cart.count;
+            });
+
+            // 更新购物车总价
+            document.querySelectorAll('.cart-total h3').forEach(totalElement => {
+                totalElement.textContent = `总计：¥ ${cart.total.toFixed(2)}`;
+            });
+
+            // 更新购物车列表
+            const cartItems = document.querySelector('.cart-items');
+            if (cartItems) {
+                cartItems.innerHTML = cart.items.map(item => `
+                    <div class="cart-item" data-item-id="${item.id}">
+                        <img src="${item.banner}" alt="${item.title}">
+                        <div class="item-info">
+                            <h3>${item.title}</h3>
+                            <p>¥${item.price.toFixed(2)}</p>
+                        </div>
+                        <button class="remove-btn">移除</button>
+                    </div>
+                `).join('') || '<div class="empty-cart">购物车是空的</div>';
+            }
+        } catch (error) {
+            console.error('更新购物车显示失败:', error);
+        }
     }
 
     // 加入购物车逻辑
     document.querySelectorAll('.buy-btn').forEach(button => {
         button.addEventListener('click', function() {
             const gameCard = this.closest('.game-card');
+            if (!gameCard) return;
+            
             const gameInfo = {
                 id: gameCard.dataset.gameId,
-                title: gameCard.querySelector('.game-title').textContent,
-                price: parseFloat(gameCard.querySelector('.price').textContent.replace(/[^0-9.]/g, ''))
+                title: gameCard.querySelector('.game-title')?.textContent || '未知游戏',
+                price: parseFloat(gameCard.querySelector('.price')?.textContent.replace(/[^0-9.]/g, '') || '0')
             };
 
             // 添加到购物车
@@ -361,7 +381,9 @@ document.addEventListener('DOMContentLoaded', function() {
 // ================= 导航栏动态控制 =================
 function updateNavbar() {
     const navLinks = document.getElementById('nav-links');
-    const currentUser = JSON.parse(sessionStorage.getItem('currentPlayer'));
+    if (!navLinks) return; // 如果元素不存在，直接返回
+    
+    const currentUser = JSON.parse(localStorage.getItem('currentPlayer'));
     
     // 基础链接
     let linksHtml = `
@@ -425,68 +447,359 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // 在文件顶部添加
 const UserGameManager = {
-    getUploadedGames: () => JSON.parse(localStorage.getItem('uploadedGames') || '[]'),
+    getUploadedGames: () => GameManager.getAllGames(),
     
     renderUserGames: function() {
         const container = document.getElementById('userGamesContainer');
+        if (!container) return;
+        
         const games = this.getUploadedGames();
         
         container.innerHTML = games.length ? 
             games.map(game => `
                 <div class="game-card" data-game-id="${game.id}">
-                    <a href="game-detail.html?id=${game.id}">
-                        <img src="${game.banner}" alt="${game.title}">
-                        <h3>${game.title}</h3>
-                        <p>¥${game.price}</p>
-                        <button class="buy-btn">加入购物车</button>
-                    </a>
+                    <img src="${game.banner}" alt="${game.title}">
+                    <h3 class="game-title">${game.title}</h3>
+                    <p class="price">¥${game.price}</p>
+                    <button class="buy-btn">加入购物车</button>
                 </div>
             `).join('') : 
             '<div class="empty-tip">期待您的推荐！</div>';
         
         // 绑定事件
-        container.addEventListener('click', e => {
-            if(e.target.classList.contains('buy-btn')) {
-                const gameId = e.target.closest('.game-card').dataset.gameId;
-                addToCart(gameId);
-            }
+        container.querySelectorAll('.buy-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault(); // 阻止默认行为
+                const gameCard = button.closest('.game-card');
+                if (gameCard) {
+                    const gameId = gameCard.dataset.gameId;
+                    CartManager.addToCart(gameId);
+                }
+            });
         });
     }
-}
+};
 
 // 添加游戏管理器
 const GameManager = {
     uploadGame: function(gameData) {
-        return new Promise((resolve, reject) => {
-            // 获取已上传的游戏列表
-            const uploadedGames = JSON.parse(localStorage.getItem('uploadedGames') || '[]');
-            
-            // 生成新的游戏ID
-            const newGameId = 'game_' + Date.now();
-            
-            // 创建新的游戏对象
-            const newGame = {
-                id: newGameId,
-                ...gameData,
-                uploadDate: new Date().toISOString()
-            };
-            
-            // 添加到已上传游戏列表
-            uploadedGames.push(newGame);
-            
-            // 保存到localStorage
+        return new Promise(async (resolve, reject) => {
             try {
-                localStorage.setItem('uploadedGames', JSON.stringify(uploadedGames));
+                // 压缩图片
+                if (gameData.banner) {
+                    gameData.banner = await this.compressImage(gameData.banner);
+                }
+                
+                // 获取已上传的游戏列表
+                const uploadedGames = this.getUploadedGames();
+                
+                // 生成新的游戏ID
+                const newGameId = 'game_' + Date.now();
+                
+                // 创建新的游戏对象
+                const newGame = {
+                    id: newGameId,
+                    ...gameData,
+                    uploadDate: new Date().toISOString()
+                };
+                
+                // 添加到已上传游戏列表
+                uploadedGames.push(newGame);
+                
+                // 保存到localStorage
+                await this.saveGames(uploadedGames);
                 resolve(newGame);
             } catch (error) {
                 reject(error);
             }
         });
+    },
+
+    getUploadedGames: function() {
+        try {
+            // 首先尝试获取新的分块存储数据
+            const index = JSON.parse(localStorage.getItem('uploadedGames_index') || '{"totalChunks":0,"totalGames":0}');
+            let allGames = [];
+            
+            // 获取所有分块数据
+            for (let i = 0; i < index.totalChunks; i++) {
+                const chunk = JSON.parse(localStorage.getItem(`uploadedGames_${i}`) || '[]');
+                allGames = allGames.concat(chunk);
+            }
+
+            // 如果没有分块数据，尝试获取旧格式数据
+            if (allGames.length === 0) {
+                const oldGames = JSON.parse(localStorage.getItem('uploadedGames') || '[]');
+                if (oldGames.length > 0) {
+                    // 将旧数据转换为新格式
+                    this.saveGames(oldGames);
+                    return oldGames;
+                }
+            }
+            
+            return allGames;
+        } catch (error) {
+            console.error('获取游戏列表失败:', error);
+            // 如果出错，尝试获取旧格式数据
+            try {
+                return JSON.parse(localStorage.getItem('uploadedGames') || '[]');
+            } catch (e) {
+                return [];
+            }
+        }
+    },
+
+    saveGames: async function(games) {
+        try {
+            // 如果数据太大，只保留最新的10个游戏
+            if (games.length > 10) {
+                games = games.slice(-10);
+            }
+
+            // 清理所有相关的localStorage项
+            for (let i = 0; i < 10; i++) {
+                localStorage.removeItem(`uploadedGames_${i}`);
+            }
+            localStorage.removeItem('uploadedGames_index');
+            localStorage.removeItem('uploadedGames');
+            
+            // 分批保存数据
+            const chunkSize = 5;
+            for (let i = 0; i < games.length; i += chunkSize) {
+                const chunk = games.slice(i, i + chunkSize);
+                localStorage.setItem(`uploadedGames_${i/chunkSize}`, JSON.stringify(chunk));
+            }
+            
+            // 保存索引信息
+            localStorage.setItem('uploadedGames_index', JSON.stringify({
+                totalChunks: Math.ceil(games.length / chunkSize),
+                totalGames: games.length
+            }));
+        } catch (error) {
+            console.error('保存游戏失败:', error);
+            throw new Error('保存游戏失败，可能是存储空间不足');
+        }
+    },
+
+    compressImage: function(base64String) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.src = base64String;
+            
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                
+                // 计算新的尺寸，保持宽高比
+                const maxSize = 800;
+                if (width > height && width > maxSize) {
+                    height = Math.round((height * maxSize) / width);
+                    width = maxSize;
+                } else if (height > maxSize) {
+                    width = Math.round((width * maxSize) / height);
+                    height = maxSize;
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // 压缩图片质量
+                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
+                resolve(compressedBase64);
+            };
+            
+            img.onerror = function() {
+                reject(new Error('图片加载失败'));
+            };
+        });
+    },
+
+    // 获取所有游戏数据
+    getAllGames: function() {
+        try {
+            // 首先尝试获取新的分块存储数据
+            const index = JSON.parse(localStorage.getItem('uploadedGames_index') || '{"totalChunks":0,"totalGames":0}');
+            let allGames = [];
+            
+            // 获取所有分块数据
+            for (let i = 0; i < index.totalChunks; i++) {
+                const chunk = JSON.parse(localStorage.getItem(`uploadedGames_${i}`) || '[]');
+                allGames = allGames.concat(chunk);
+            }
+
+            // 如果没有分块数据，尝试获取旧格式数据
+            if (allGames.length === 0) {
+                const oldGames = JSON.parse(localStorage.getItem('uploadedGames') || '[]');
+                if (oldGames.length > 0) {
+                    // 将旧数据转换为新格式
+                    this.saveGames(oldGames);
+                    return oldGames;
+                }
+            }
+            
+            return allGames;
+        } catch (error) {
+            console.error('获取游戏列表失败:', error);
+            // 如果出错，尝试获取旧格式数据
+            try {
+                return JSON.parse(localStorage.getItem('uploadedGames') || '[]');
+            } catch (e) {
+                return [];
+            }
+        }
+    }
+};
+
+// 全局购物车管理器
+const CartManager = {
+    cart: JSON.parse(localStorage.getItem('cart')) || {
+        count: 0,
+        items: [],
+        total: 0
+    },
+
+    updateDisplay: function() {
+        try {
+            // 更新购物车计数器
+            document.querySelectorAll('.cart-counter').forEach(counter => {
+                counter.textContent = this.cart.count;
+            });
+
+            // 更新购物车总价
+            document.querySelectorAll('.cart-total h3').forEach(totalElement => {
+                totalElement.textContent = `总计：¥ ${this.cart.total.toFixed(2)}`;
+            });
+
+            // 更新购物车列表
+            const cartItems = document.querySelector('.cart-items');
+            if (cartItems) {
+                cartItems.innerHTML = this.cart.items.map(item => `
+                    <div class="cart-item" data-item-id="${item.id}">
+                        <img src="${item.banner}" alt="${item.title}">
+                        <div class="item-info">
+                            <h3>${item.title}</h3>
+                            <p>¥${item.price.toFixed(2)}</p>
+                        </div>
+                        <button class="remove-btn">移除</button>
+                    </div>
+                `).join('') || '<div class="empty-cart">购物车是空的</div>';
+            }
+        } catch (error) {
+            console.error('更新购物车显示失败:', error);
+        }
+    },
+
+    createFlyItem: function(button, gameCard) {
+        const flyItem = document.createElement('div');
+        const imgSrc = gameCard.querySelector('img').src;
+        
+        flyItem.style.cssText = `
+            position: fixed;
+            width: 80px;
+            height: 50px;
+            background: url('${imgSrc}');
+            background-size: cover;
+            border-radius: 4px;
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            pointer-events: none;
+            z-index: 9999;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transform-origin: center;
+        `;
+
+        const buttonRect = button.getBoundingClientRect();
+        flyItem.style.left = `${buttonRect.left + buttonRect.width/2 - 40}px`;
+        flyItem.style.top = `${buttonRect.top + buttonRect.height/2 - 25}px`;
+        
+        return flyItem;
+    },
+
+    animateToCart: function(flyItem, callback) {
+        document.body.appendChild(flyItem);
+
+        const cartLink = document.querySelector('[href="cart.html"]');
+        if (!cartLink) {
+            if (callback) callback();
+            return;
+        }
+        
+        const cartRect = cartLink.getBoundingClientRect();
+        const targetX = cartRect.left + cartRect.width/2 - 40;
+        const targetY = cartRect.top + cartRect.height/2 - 25;
+
+        flyItem.style.transform = `
+            translate(${targetX - parseFloat(flyItem.style.left)}px, 
+                      ${targetY - parseFloat(flyItem.style.top)}px)
+            scale(0.5) 
+            rotate(360deg)
+        `;
+        flyItem.style.opacity = '0.5';
+
+        setTimeout(() => {
+            flyItem.style.transition = 'all 0.2s ease-out';
+            flyItem.style.transform += 'scale(0)';
+            flyItem.style.opacity = '0';
+            
+            setTimeout(() => {
+                flyItem.remove();
+                if (callback) callback();
+            }, 200);
+        }, 600);
+    },
+
+    addToCart: function(gameId) {
+        try {
+            const games = GameManager.getAllGames();
+            const game = games.find(g => g.id === gameId);
+            
+            if (!game) {
+                console.error('游戏不存在:', gameId);
+                return;
+            }
+
+            const existingItem = this.cart.items.find(item => item.id === gameId);
+            if (existingItem) {
+                alert('该游戏已在购物车中');
+                return;
+            }
+
+            const buyBtn = document.querySelector(`.game-card[data-game-id="${gameId}"] .buy-btn`);
+            const gameCard = buyBtn?.closest('.game-card');
+            
+            if (!buyBtn || !gameCard) {
+                console.error('未找到游戏卡片元素');
+                return;
+            }
+
+            const flyItem = this.createFlyItem(buyBtn, gameCard);
+            
+            this.animateToCart(flyItem, () => {
+                this.cart.count++;
+                this.cart.items.push({
+                    id: game.id,
+                    title: game.title,
+                    price: game.price,
+                    banner: game.banner
+                });
+                this.cart.total += game.price;
+
+                localStorage.setItem('cart', JSON.stringify(this.cart));
+                this.updateDisplay();
+            });
+        } catch (error) {
+            console.error('添加到购物车失败:', error);
+            alert('添加到购物车失败，请重试');
+        }
     }
 };
 
 // 在DOMContentLoaded事件中调用
 document.addEventListener('DOMContentLoaded', () => {
+    updateNavbar();
     UserGameManager.renderUserGames();
-    // 其他原有逻辑...
+    CartManager.updateDisplay(); // 初始化购物车显示
 });
