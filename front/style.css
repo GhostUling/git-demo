@@ -370,83 +370,89 @@ footer {
 }
 
 .game-card {
-    background: #1a1a1a;
+    background: #1b2838;
     border-radius: 8px;
     overflow: hidden;
     transition: transform 0.3s ease;
-    animation: cardEntrance 0.6s ease-out forwards;
-    opacity: 0;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    width: 300px;
+    margin: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-@keyframes cardEntrance {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.game-card:hover {
+    transform: translateY(-5px);
 }
 
-.game-image {
+.game-card a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.game-card img {
     width: 100%;
-    height: 180px;
+    height: 150px;
     object-fit: cover;
-    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    object-position: center;
+    display: block;
 }
 
-.game-image:hover {
-    transform: scale(1.05);
-}
-
-.game-info {
-    padding: 20px;
-}
-
-.game-title {
+.game-card h3 {
+    padding: 15px 15px 5px;
+    margin: 0;
+    font-size: 1.1em;
     color: #fff;
-    font-size: 16px;
-    margin-bottom: 15px;
-    height: 40px;
+    white-space: nowrap;
     overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.game-price {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.price {
+.game-card p {
+    padding: 0 15px 15px;
+    margin: 0;
     color: #66c0f4;
     font-weight: bold;
-    font-size: 18px;
 }
 
-.discount {
-    color: #a1cd44;
-    font-size: 14px;
-    text-decoration: line-through;
-    margin-right: 8px;
-}
-
-.buy-btn {
+.game-card .buy-btn {
+    width: 100%;
+    padding: 10px;
     background: #66c0f4;
-    color: #fff;
     border: none;
-    padding: 10px 25px;
-    border-radius: 4px;
-    cursor: pointer;
+    color: #fff;
     font-weight: bold;
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    cursor: pointer;
+    transition: background 0.3s ease;
 }
 
-.buy-btn:hover {
-    background: #4f9cbd;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(102, 192, 244, 0.3);
+.game-card .buy-btn:hover {
+    background: #1999ff;
+}
+
+/* 游戏列表容器样式 */
+.games-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* 预览图片样式 */
+.preview-image {
+    max-width: 100%;
+    height: 200px;
+    object-fit: cover;
+    object-position: center;
+    margin-top: 10px;
+    border-radius: 4px;
+    display: none;
+}
+
+.preview-image:not([src=""]) {
+    display: block;
 }
 
 /* 游戏详情页 */
@@ -883,13 +889,16 @@ footer {
     margin: 40px 0;
     padding: 20px;
     background: #1a1a1a;
+    max-width: 1200px;
+    margin: 40px auto;
 }
 
 #userGamesContainer {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 20px;
     padding: 15px;
+    justify-items: center;
 }
 
 .empty-tip {
