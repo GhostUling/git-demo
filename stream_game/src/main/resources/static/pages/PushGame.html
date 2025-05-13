@@ -1,0 +1,253 @@
+<!-- 游戏上传页 game-upload.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发布游戏 - Stream</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/main.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-content">
+            <!-- 左侧logo -->
+            <a href="../index.html" class="logo">Stream</a>
+            
+            <!-- 搜索框 -->
+            <div class="search-container">
+                <form id="search-form">
+                    <input type="text" 
+                           placeholder="搜索游戏..." 
+                           class="search-input"
+                           id="search-input">
+                    <button type="submit" class="search-btn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#b8b6b4" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="M21 21l-4.35-4.35"/>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+    
+            <!-- 右侧导航链接 -->
+            <div class="nav-links">
+                <a href="../index.html">商城</a>
+                <a href="cart.html">购物车 <span class="cart-counter">0</span></a>
+                <a href="profile.html">个人中心</a>
+                <a href="login.html">登录/注册</a>
+                <a href="PushGame.html" class="active">发布游戏</a>
+                <a href="about.html">关于</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="upload-container">
+            <h1 style="text-align: center; margin-bottom: 30px;">游戏发布系统</h1>
+            <form class="upload-form" id="gameForm">
+                <!-- 左侧栏 -->
+                <div class="form-column">
+                    <div class="form-section">
+                        <label class="form-label">游戏标题</label>
+                        <input type="text" class="form-input" id="gameTitle" required>
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">价格 (¥)</label>
+                        <input type="number" class="form-input" id="gamePrice" step="0.01" required>
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">游戏描述</label>
+                        <textarea class="form-input" id="gameDescription" rows="5" required></textarea>
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">游戏标签 (回车添加)</label>
+                        <input type="text" class="form-input tag-input" id="tagInput">
+                        <div class="tag-container" id="tagContainer"></div>
+                    </div>
+                </div>
+
+                <!-- 右侧栏 -->
+                <div class="form-column">
+                    <div class="form-section">
+                        <label class="form-label">横幅图片</label>
+                        <input type="file" class="form-input" id="bannerImage" accept="image/*" required>
+                        <img id="imagePreview" class="preview-image" alt="图片预览">
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">系统需求</label>
+                        <div id="requirements-container">
+                            <div>
+                                <input type="text" class="form-input" 
+                                       placeholder="操作系统" id="osRequirement" required>
+                            </div>
+                            <div>
+                                <input type="text" class="form-input" 
+                                       placeholder="处理器" id="cpuRequirement" required>
+                            </div>
+                            <div>
+                                <input type="text" class="form-input" 
+                                       placeholder="内存" id="ramRequirement" required>
+                            </div>
+                            <div>
+                                <input type="text" class="form-input" 
+                                       placeholder="显卡" id="gpuRequirement" required>
+                            </div>
+                            <div>
+                                <input type="text" class="form-input" 
+                                       placeholder="存储空间" id="storageRequirement" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-submit">
+                    <button type="submit" class="buy-btn" id="submit-btn">发布游戏</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 标签输入功能
+        const tagInput = document.getElementById('tagInput');
+        const tagContainer = document.getElementById('tagContainer');
+        
+        tagInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && tagInput.value.trim()) {
+                e.preventDefault();
+                addTag(tagInput.value.trim());
+                tagInput.value = '';
+            }
+        });
+
+        function addTag(text) {
+            const tag = document.createElement('span');
+            tag.className = 'game-tag';
+            tag.textContent = text;
+            tagContainer.appendChild(tag);
+        }
+
+        // 图片预览功能
+        const imageInput = document.getElementById('bannerImage');
+        const imagePreview = document.getElementById('imagePreview');
+        
+        imageInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // 表单提交处理
+        const form = document.getElementById('gameForm');
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // 验证表单数据
+            const gameData = {
+                title: document.getElementById('gameTitle').value,
+                price: parseFloat(document.getElementById('gamePrice').value),
+                description: document.getElementById('gameDescription').value,
+                tags: Array.from(document.querySelectorAll('.game-tag')).map(tag => tag.textContent),
+                requirements: {
+                    os: document.getElementById('osRequirement').value,
+                    cpu: document.getElementById('cpuRequirement').value,
+                    ram: document.getElementById('ramRequirement').value,
+                    gpu: document.getElementById('gpuRequirement').value,
+                    storage: document.getElementById('storageRequirement').value
+                }
+            };
+
+            // 验证数据
+            if (!validateGameData(gameData)) {
+                return;
+            }
+
+            // 处理图片文件
+            const bannerFile = document.getElementById('bannerImage').files[0];
+            if (bannerFile) {
+                try {
+                    gameData.banner = await convertToBase64(bannerFile);
+                } catch (error) {
+                    console.error('图片处理失败:', error);
+                    alert('图片处理失败，请重试');
+                    return;
+                }
+            }
+            
+            try {
+                await GameManager.uploadGame(gameData);
+                alert('游戏上传成功！');
+                window.location.href = 'profile.html'; // 上传成功后跳转到个人中心
+            } catch (error) {
+                console.error('上传失败:', error);
+                alert('上传失败，请重试');
+            }
+        });
+        
+        // 图片转Base64
+        function convertToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+        
+        // 数据验证
+        function validateGameData(data) {
+            const errors = [];
+            
+            if (!data.title || data.title.length > 50) {
+                errors.push('标题需在1-50字符之间');
+            }
+            
+            if (isNaN(data.price) || data.price <= 0) {
+                errors.push('价格必须大于0');
+            }
+            
+            if (errors.length > 0) {
+                alert(`数据错误:\n${errors.join('\n')}`);
+                return false;
+            }
+            return true;
+        }
+    </script>
+	
+	<footer>
+	    <div class="footer-content">
+	        <div class="footer-section">
+	            <h4>关于我们</h4>
+	            <a href="#">制作人员名单</a>
+	        </div>
+	        <div class="footer-section">
+	            <h4>客户服务</h4>
+	            <a href="#">帮助中心</a>
+	            <a href="#">常见问题</a>
+	        </div>
+	        <div class="footer-section">
+	            <h4>法律条款</h4>
+	            <a href="#">隐私政策</a>
+	            <a href="#">用户协议</a>
+	        </div>
+	        <div class="footer-section">
+	            <h4>关注我们</h4>
+	            <a href="images/qq.jpg">QQ</a>
+	            <a href="images/weixin.jpg">微信</a>
+	            <a href="#">GitHub</a>
+	        </div>
+	    </div>
+	</footer>
+	
+</body>
+</html>

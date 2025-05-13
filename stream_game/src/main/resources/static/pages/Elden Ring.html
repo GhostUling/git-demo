@@ -1,0 +1,111 @@
+<!-- 游戏详情页 game-detail.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elden Ring - Stream</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-content">
+            <!-- 左侧logo -->
+            <a href="../index.html" class="logo">Stream</a>
+            
+            <!-- 搜索框 -->
+            <div class="search-container">
+                <form id="search-form">
+                    <input type="text" 
+                           placeholder="搜索游戏..." 
+                           class="search-input"
+                           id="search-input">
+                    <button type="submit" class="search-btn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#b8b6b4" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="M21 21l-4.35-4.35"/>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+    
+            <!-- 右侧导航链接 -->
+            <div class="nav-links">
+                <a href="../index.html">商城</a>
+                <a href="cart.html">购物车 <span class="cart-counter">0</span></a>
+                <a href="profile.html">个人中心</a>
+                <a href="login.html">登录/注册</a>
+                <a href="PushGame.html">发布游戏</a>
+                <a href="about.html">关于</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="game-detail">
+            <img src="../assets/images/Elden Ring.jpg" class="game-banner" alt="游戏横幅">
+            
+            <div class="purchase-box">
+                <div>
+                    <span class="price" style="font-size: 24px;">¥ 298</span>
+                    <div class="game-tags">
+                        <span class="game-tag">魂系</span>
+                        <span class="game-tag">开放世界</span>
+                        <span class="game-tag">黑暗奇幻</span>
+                    </div>
+                </div>
+                <button class="buy-btn" style="padding: 15px 40px;">加入购物车</button>
+            </div>
+
+            <div class="game-content">
+                <h2>游戏介绍</h2>
+                <p>由George R.R. Martin参与世界观构建，FromSoftware打造的黑暗奇幻世界。扮演褪色者，穿越迷雾之海，寻找艾尔登法环碎片，成为艾尔登之王。</p>
+                
+                <h2>特色系统</h2>
+                <ul>
+                    <li>灵马系统：自由召唤坐骑探索无缝开放世界</li>
+                    <li>战灰系统：自由组合武器战技与属性</li>
+                    <li>多人模式：支持合作与入侵的异步联机系统</li>
+                    <li>职业系统：10种初始职业选择</li>
+                </ul>
+
+                <h2>系统需求</h2>
+                <ul class="system-requirements">
+                    <li>操作系统: Windows 10/11 64位</li>
+                    <li>处理器: Intel Core i7-8700K / AMD Ryzen 5 3600X</li>
+                    <li>内存: 16 GB RAM</li>
+                    <li>显卡: NVIDIA GTX 1070 8GB / AMD RX Vega 56 8GB</li>
+                    <li>存储空间: 需要 60 GB 可用空间</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+	<footer>
+	    <div class="footer-content">
+	        <div class="footer-section">
+	            <h4>关于我们</h4>
+	            <a href="#">制作人员名单</a>
+	        </div>
+	        <div class="footer-section">
+	            <h4>客户服务</h4>
+	            <a href="#">帮助中心</a>
+	            <a href="#">常见问题</a>
+	        </div>
+	        <div class="footer-section">
+	            <h4>法律条款</h4>
+	            <a href="#">隐私政策</a>
+	            <a href="#">用户协议</a>
+	        </div>
+	        <div class="footer-section">
+	            <h4>关注我们</h4>
+	            <a href="images/qq.jpg">QQ</a>
+	            <a href="images/weixin.jpg">微信</a>
+	            <a href="#">GitHub</a>
+	        </div>
+	    </div>
+	</footer>
+<!-- 同主页页脚 -->
+    <script src="../assets/js/main.js"></script>
+</body>
+</html>
