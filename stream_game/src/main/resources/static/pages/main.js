@@ -1,3 +1,14 @@
+// 立即执行函数，确保导航栏在所有页面加载时都会被更新
+(function() {
+    // 页面加载完成时执行
+    document.addEventListener('DOMContentLoaded', function() {
+        // 更新导航栏
+        updateNavbar();
+        
+        console.log('导航栏已初始化');
+    });
+})();
+
 // JavaScript 文件 (assets/js/main.js)
 document.addEventListener('DOMContentLoaded', function() {
     // 全局API基础URL
@@ -392,41 +403,69 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+
+    // 如果是首页，加载玩家上传的游戏
+    if (window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('/')) {
+        UserGameManager.renderUserGames();
+    }
 });
 
 
 // ================= 导航栏动态控制 =================
 function updateNavbar() {
-    const navLinks = document.getElementById('nav-links');
+    const navLinks = document.querySelector('.nav-links');
     if (!navLinks) return; // 如果元素不存在，直接返回
     
+    // 从localStorage获取当前用户
     const currentUser = JSON.parse(localStorage.getItem('currentPlayer'));
+    console.log('当前用户:', currentUser); // 添加调试信息
     
     // 基础链接
     let linksHtml = `
-        <a href="index.html" class="${location.pathname.endsWith('index.html') ? 'active' : ''}">商城</a>
+        <a href="index.html" class="${location.pathname.endsWith('index.html') || location.pathname.endsWith('/') ? 'active' : ''}">商城</a>
         <a href="cart.html" class="${location.pathname.endsWith('cart.html') ? 'active' : ''}">购物车 <span class="cart-counter">0</span></a>
         <a href="about.html" class="${location.pathname.endsWith('about.html') ? 'active' : ''}">关于</a>
     `;
 
     // 根据登录状态显示不同内容
     if (currentUser) {
+        // 添加用户相关链接
         linksHtml += `
             <a href="profile.html" class="${location.pathname.endsWith('profile.html') ? 'active' : ''}">个人中心</a>
-            <a href="#" id="logout-btn">退出</a>
+            <a href="PushGame.html" class="${location.pathname.endsWith('PushGame.html') ? 'active' : ''}">发布游戏</a>
         `;
+        
+        // 为testuser用户添加审核按钮
+        if (currentUser.username === 'testuser') {
+            linksHtml += `
+                <a href="review.html" class="${location.pathname.endsWith('review.html') ? 'active' : ''}">游戏审核</a>
+            `;
+        }
+        
+        // 添加退出按钮
+        linksHtml += `<a href="#" id="logout-btn">退出</a>`;
     } else {
-        linksHtml += `<a href="login.html" class="${location.pathname.endsWith('login.html') ? 'active' : ''}">登录/注册</a>`;
+        // 未登录状态，显示登录/注册链接
+        linksHtml += `
+            <a href="login.html" class="${location.pathname.endsWith('login.html') ? 'active' : ''}">登录/注册</a>
+            <a href="PushGame.html" class="${location.pathname.endsWith('PushGame.html') ? 'active' : ''}">发布游戏</a>
+        `;
     }
-
+    
+    // 更新导航链接
     navLinks.innerHTML = linksHtml;
     
     // 绑定退出事件
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-            sessionStorage.removeItem('currentPlayer');
-            window.location.href = 'login.html';
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault(); // 阻止默认行为
+            // 清除登录信息
+            localStorage.removeItem('currentPlayer');
+            // 显示退出成功消息
+            alert('已成功退出登录');
+            // 重定向到首页
+            window.location.href = 'index.html';
         });
     }
 }
@@ -462,38 +501,94 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// 在文件顶部添加
+// 修改UserGameManager对象
 const UserGameManager = {
-    getUploadedGames: () => GameManager.getAllGames(),
+    // 从后端获取厂商上传的游戏
+    fetchApprovedGames: async function() {
+        try {
+            // 获取所有游戏
+            const response = await fetch('http://localhost:8080/api/games');
+            if (!response.ok) {
+                throw new Error(`获取游戏列表失败: ${response.status}`);
+            }
+            const allGames = await response.json();
+            console.log('从服务器获取到的所有游戏:', allGames);
+            
+            // 只获取ID大于9的游戏，因为schema.sql中预先插入了9个游戏
+            // 所以ID > 9的游戏即为开发者后续上传的游戏
+            const developerUploadedGames = allGames.filter(game => game.gameId > 9);
+            console.log('过滤后的开发者上传游戏:', developerUploadedGames);
+            
+            return developerUploadedGames;
+        } catch (error) {
+            console.error('API请求失败:', error);
+            return [];
+        }
+    },
     
-    renderUserGames: function() {
+    renderUserGames: async function() {
         const container = document.getElementById('userGamesContainer');
         if (!container) return;
         
-        const games = this.getUploadedGames();
+        // 显示加载中状态
+        container.innerHTML = '<div class="loading">加载中...</div>';
         
-        container.innerHTML = games.length ? 
-            games.map(game => `
-                <div class="game-card" data-game-id="${game.id}">
-                        <img src="${game.banner}" alt="${game.title}">
-                    <h3 class="game-title">${game.title}</h3>
-                    <p class="price">¥${game.price}</p>
-                        <button class="buy-btn">加入购物车</button>
-                </div>
-            `).join('') : 
-            '<div class="empty-tip">期待您的推荐！</div>';
-        
-        // 绑定事件
-        container.querySelectorAll('.buy-btn').forEach(button => {
-            button.addEventListener('click', (e) => {
-                e.preventDefault(); // 阻止默认行为
-                const gameCard = button.closest('.game-card');
-                if (gameCard) {
-                    const gameId = gameCard.dataset.gameId;
-                    CartManager.addToCart(gameId);
+        try {
+            // 从服务器获取厂商上传的游戏（ID > 9的游戏）
+            const games = await this.fetchApprovedGames();
+            
+            if (games && games.length > 0) {
+                container.innerHTML = games.map(game => `
+                    <div class="game-card" data-game-id="${game.gameId}">
+                        <img src="${game.gameName}.jpg" onerror="this.src='default-game.jpg'" alt="${game.gameName}">
+                        <div class="game-info">
+                            <h3 class="game-title">${game.gameName}</h3>
+                            <div class="game-price">
+                                <span class="price">¥ ${game.price || "99"}</span>
+                                <button class="buy-btn">加入购物车</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                console.log('已渲染开发者上传的游戏:', games.length, '个');
+            } else {
+                container.innerHTML = '<div class="empty-tip">暂无开发者上传的游戏</div>';
+            }
+            
+            // 绑定"加入购物车"按钮事件
+            container.querySelectorAll('.buy-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault(); // 阻止默认行为
+                    const gameCard = button.closest('.game-card');
+                    if (gameCard) {
+                        const gameId = gameCard.dataset.gameId;
+                        console.log('点击加入购物车按钮:', gameId);
+                        CartManager.addToCart(gameId);
+                    }
+                });
+            });
+            
+            // 同时处理页面中所有游戏卡片的加入购物车事件
+            document.querySelectorAll('.game-grid:not(#userGamesContainer) .buy-btn').forEach(button => {
+                // 检查是否已经绑定了事件
+                if (!button.hasClickListener) {
+                    button.hasClickListener = true;
+                    button.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const gameCard = button.closest('.game-card');
+                        if (gameCard) {
+                            const gameId = gameCard.dataset.gameId;
+                            console.log('点击原有游戏加入购物车按钮:', gameId);
+                            CartManager.addToCart(gameId);
+                        }
+                    });
                 }
             });
-        });
+        } catch (error) {
+            console.error('加载游戏失败:', error);
+            container.innerHTML = '<div class="error-tip">加载失败，请刷新页面重试</div>';
+        }
     }
 };
 
@@ -542,19 +637,14 @@ const GameManager = {
                     formData.append('version', '1.0'); // 默认版本号
                     formData.append('description', `${gameData.description}\n价格: ${gameData.price}`);
                     
-                    // 如果有图片，转换为文件对象
-                    if (gameData.banner && gameData.banner.startsWith('data:')) {
-                        const blob = await fetch(gameData.banner).then(r => r.blob());
-                        const file = new File([blob], `${gameData.title}.jpg`, { type: 'image/jpeg' });
-                        formData.append('file', file);
+                    // 如果有游戏文件，添加到表单
+                    const gameFile = document.getElementById('gameFile')?.files[0];
+                    if (gameFile) {
+                        formData.append('file', gameFile);
+                    } else if (gameData.file) {
+                        formData.append('file', gameData.file);
                     } else {
-                        // 使用默认图片文件（此处需要页面上有一个隐藏的文件输入）
-                        const fileInput = document.querySelector('input[type="file"]');
-                        if (fileInput && fileInput.files.length > 0) {
-                            formData.append('file', fileInput.files[0]);
-                        } else {
-                            throw new Error('缺少游戏安装包文件');
-                        }
+                        throw new Error('缺少游戏安装包文件');
                     }
                     
                     // 发送到后端API
@@ -847,25 +937,98 @@ const CartManager = {
 
     addToCart: function(gameId) {
         try {
-            const games = GameManager.getAllGames();
-            const game = games.find(g => g.id === gameId);
+            console.log('尝试将游戏添加到购物车:', gameId);
             
-            if (!game) {
-                console.error('游戏不存在:', gameId);
+            // 获取游戏信息的方式取决于游戏ID的类型
+            let gameInfo;
+            
+            // 如果是数字或者数字字符串，说明是从后端API获取的游戏
+            if (!isNaN(gameId)) {
+                // 尝试从API获取的游戏列表中查找
+                const apiGames = document.querySelectorAll(`#userGamesContainer .game-card[data-game-id="${gameId}"]`);
+                if (apiGames.length > 0) {
+                    const gameCard = apiGames[0];
+                    const title = gameCard.querySelector('.game-title').textContent;
+                    const priceText = gameCard.querySelector('.price').textContent;
+                    const price = parseFloat(priceText.replace(/[^0-9.]/g, ''));
+                    
+                    gameInfo = {
+                        id: gameId,
+                        title: title,
+                        price: price
+                    };
+                    console.log('从API游戏列表中找到游戏:', gameInfo);
+                }
+            }
+            
+            // 如果上面没找到，尝试从本地存储中查找
+            if (!gameInfo) {
+                const games = GameManager.getAllGames();
+                const game = games.find(g => g.id === gameId);
+                
+                if (game) {
+                    gameInfo = {
+                        id: game.id,
+                        title: game.title,
+                        price: game.price
+                    };
+                    console.log('从本地存储中找到游戏:', gameInfo);
+                }
+            }
+            
+            // 如果还是没找到游戏信息，尝试从当前页面的游戏卡片中提取
+            if (!gameInfo) {
+                const gameCard = document.querySelector(`.game-card[data-game-id="${gameId}"]`);
+                if (gameCard) {
+                    const title = gameCard.querySelector('.game-title').textContent;
+                    const priceElement = gameCard.querySelector('.price');
+                    const priceText = priceElement ? priceElement.textContent : '99';
+                    const price = parseFloat(priceText.replace(/[^0-9.]/g, ''));
+                    
+                    gameInfo = {
+                        id: gameId,
+                        title: title,
+                        price: price || 99
+                    };
+                    console.log('从页面元素中找到游戏:', gameInfo);
+                }
+            }
+            
+            // 如果所有方法都无法获取游戏信息，则报错
+            if (!gameInfo) {
+                console.error('无法找到游戏信息:', gameId);
+                alert('无法找到该游戏信息，请刷新页面后重试');
                 return;
             }
 
-            const existingItem = this.cart.items.find(item => item.id === gameId);
+            // 检查是否已在购物车中
+            const existingItem = this.cart.items.find(item => item.id === gameId.toString());
             if (existingItem) {
                 alert('该游戏已在购物车中');
                 return;
             }
 
+            // 查找游戏卡片元素
             const buyBtn = document.querySelector(`.game-card[data-game-id="${gameId}"] .buy-btn`);
             const gameCard = buyBtn?.closest('.game-card');
             
             if (!buyBtn || !gameCard) {
                 console.error('未找到游戏卡片元素');
+                
+                // 即使找不到卡片元素，也尝试直接添加到购物车
+                this.cart.count++;
+                this.cart.items.push({
+                    id: gameInfo.id.toString(),
+                    title: gameInfo.title,
+                    price: gameInfo.price,
+                    banner: `${gameInfo.title}.jpg` // 使用标题作为图片名
+                });
+                this.cart.total += gameInfo.price;
+                
+                localStorage.setItem('cart', JSON.stringify(this.cart));
+                this.updateDisplay();
+                
+                alert(`已将 ${gameInfo.title} 添加到购物车`);
                 return;
             }
 
@@ -881,29 +1044,51 @@ const CartManager = {
             this.animateToCart(flyItem, () => {
                 this.cart.count++;
                 // 使用游戏卡片中的图片路径，如果不存在则使用默认图片
-                const banner = gameImage.src || 'assets/images/default-game.jpg';
+                const banner = gameImage.src || 'default-game.jpg';
                 
                 this.cart.items.push({
-                    id: game.id,
-                    title: game.title,
-                    price: game.price,
+                    id: gameInfo.id.toString(),
+                    title: gameInfo.title,
+                    price: gameInfo.price,
                     banner: banner
                 });
-                this.cart.total += game.price;
+                this.cart.total += gameInfo.price;
 
                 localStorage.setItem('cart', JSON.stringify(this.cart));
                 this.updateDisplay();
+                
+                console.log('游戏已添加到购物车:', gameInfo);
             });
         } catch (error) {
             console.error('添加到购物车失败:', error);
-            alert('添加到购物车失败，请重试');
+            alert('添加到购物车失败，请重试。错误: ' + error.message);
         }
     }
 };
 
 // 在DOMContentLoaded事件中调用
 document.addEventListener('DOMContentLoaded', () => {
+    // 更新导航栏
     updateNavbar();
+    
+    // 渲染玩家推荐游戏
     UserGameManager.renderUserGames();
-    CartManager.updateDisplay(); // 初始化购物车显示
+    
+    // 初始化购物车显示
+    CartManager.updateDisplay();
+    
+    // 绑定所有默认游戏的购物车按钮事件
+    document.querySelectorAll('.game-grid:not(#userGamesContainer) .buy-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const gameCard = this.closest('.game-card');
+            if (gameCard) {
+                const gameId = gameCard.dataset.gameId;
+                console.log('点击默认游戏加入购物车:', gameId);
+                CartManager.addToCart(gameId);
+            }
+        });
+    });
+    
+    console.log('页面初始化完成');
 });

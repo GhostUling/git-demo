@@ -95,6 +95,7 @@ CREATE TABLE game_upload (
     upload_time DATETIME(6) NOT NULL,
     status VARCHAR(20) NOT NULL,
     description TEXT,
+    game_id INT,
     FOREIGN KEY (developer_id) REFERENCES developer(developer_id)
 );
 
@@ -157,3 +158,5 @@ INSERT INTO game (game_id, game_name, game_type, price, description, developer_i
 -- 插入测试用户
 INSERT INTO player (username, password, email, registration_time, balance, account_active) VALUES 
     ('testuser', 'password123', 'test@example.com', NOW(), 500.00, 1); 
+    INSERT INTO player (username, password, email, registration_time, balance, account_active) VALUES 
+    ('111111', '111111', '111111@example.com', NOW(), 500.00, 1); 

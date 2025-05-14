@@ -40,6 +40,9 @@ public class GameUpload {
 
     @Column
     private String description;
+    
+    @Column
+    private Integer gameId;
 
     public enum UploadStatus {
         PENDING,    // 待审核
@@ -139,5 +142,13 @@ public class GameUpload {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+    
+    public Integer getGameId() {
+        return gameId;
+    }
+    
+    public void setGameId(Integer gameId) {
+        this.gameId = gameId;
     }
 } 
