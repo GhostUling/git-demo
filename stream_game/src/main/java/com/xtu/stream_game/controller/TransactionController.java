@@ -137,4 +137,87 @@ public class TransactionController {
         
         return new ResponseEntity<>(transaction, HttpStatus.CREATED);
     }
+    
+    // 批量购买游戏（从购物车）
+    @PostMapping("/purchase-cart")
+    public ResponseEntity<?> purchaseCart(@RequestBody Map<String, Object> purchaseRequest) {
+        try {
+            Integer playerId = (Integer) purchaseRequest.get("playerId");
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> cartItems = (List<Map<String, Object>>) purchaseRequest.get("items");
+            
+            if (playerId == null || cartItems == null || cartItems.isEmpty()) {
+                return new ResponseEntity<>(Map.of(
+                    "success", false,
+                    "message", "无效的请求数据：需要playerId和购物车商品列表"
+                ), HttpStatus.BAD_REQUEST);
+            }
+            
+            // 处理结果统计
+            int successCount = 0;
+            int failCount = 0;
+            List<String> errorMessages = new ArrayList<>();
+            List<Transaction> successTransactions = new ArrayList<>();
+            
+            // 遍历购物车商品
+            for (Map<String, Object> item : cartItems) {
+                String title = (String) item.get("title");
+                try {
+                    // 根据游戏名称查询游戏
+                    Game game = gameService.getGameByName(title);
+                    if (game == null) {
+                        // 尝试进行模糊匹配
+                        List<Game> games = gameService.getGamesByType("");  // 获取所有游戏
+                        for (Game g : games) {
+                            String gameName = g.getGameName().toLowerCase();
+                            String itemTitle = title.toLowerCase();
+                            if (gameName.equals(itemTitle) || 
+                                gameName.contains(itemTitle) || 
+                                itemTitle.contains(gameName)) {
+                                game = g;
+                                break;
+                            }
+                        }
+                        
+                        if (game == null) {
+                            failCount++;
+                            errorMessages.add("找不到游戏：" + title);
+                            continue;
+                        }
+                    }
+                    
+                    // 获取游戏ID并调用购买方法
+                    Integer gameId = game.getGameId();
+                    Transaction transaction = transactionService.purchaseGame(playerId, gameId);
+                    
+                    if (transaction != null) {
+                        successCount++;
+                        successTransactions.add(transaction);
+                    } else {
+                        failCount++;
+                        errorMessages.add("购买失败：" + title);
+                    }
+                } catch (Exception e) {
+                    failCount++;
+                    errorMessages.add("处理游戏[" + title + "]时出错: " + e.getMessage());
+                }
+            }
+            
+            // 返回处理结果
+            return new ResponseEntity<>(Map.of(
+                "success", failCount == 0,
+                "message", String.format("%d个游戏购买成功，%d个失败", successCount, failCount),
+                "successCount", successCount,
+                "failCount", failCount,
+                "errors", errorMessages,
+                "transactions", successTransactions
+            ), HttpStatus.OK);
+            
+        } catch (Exception e) {
+            return new ResponseEntity<>(Map.of(
+                "success", false,
+                "message", "处理购物车时出错: " + e.getMessage()
+            ), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 } 

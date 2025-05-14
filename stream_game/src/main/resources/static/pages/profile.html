@@ -226,11 +226,18 @@
         // 加载游戏库数据
         async function loadGameLibrary(userId) {
             try {
-                const response = await fetch(`${API_BASE_URL}/library/${userId}/games`);
+                const response = await fetch(`${API_BASE_URL}/player-games/player/${userId}`);
                 if (!response.ok) {
                     throw new Error('获取游戏库数据失败');
                 }
                 const libraryData = await response.json();
+                
+                // 添加调试日志
+                console.log('游戏库数据:', libraryData);
+                if (libraryData.length > 0) {
+                    console.log('第一个游戏数据示例:', libraryData[0]);
+                    console.log('游戏时间属性类型:', typeof libraryData[0].playTimeMinutes);
+                }
                 
                 const container = document.getElementById('game-library');
                 if (libraryData.length === 0) {
@@ -238,12 +245,24 @@
                     return;
                 }
                 
-                container.innerHTML = libraryData.map(game => `
+                // 为适应可能的API响应差异，更灵活地处理属性名
+                container.innerHTML = libraryData.map(item => {
+                    // 尝试获取游戏时间，优先使用playTimeMinutes，如果不存在则尝试其他可能的名称
+                    const playTime = item.playTimeMinutes !== undefined ? 
+                                    item.playTimeMinutes : 
+                                    (item.playTime !== undefined ? 
+                                        item.playTime : 0);
+                                        
+                    // 获取游戏名称，考虑不同的属性命名
+                    const gameName = item.game.gameName || item.game.title || '未知游戏';
+                    
+                    return `
                     <div class="library-item">
-                        <img src="../assets/images/games/${game.game.gameId}.jpg" alt="${game.game.title}" style="width:100%; height:120px; object-fit:cover;">
-                        <div class="playtime">已玩 ${formatPlaytime(game.playTimeMinutes)}</div>
+                        <img src="${item.game.gameId}.jpg" alt="${gameName}" style="width:100%; height:120px; object-fit:cover;">
+                        <div class="playtime">已玩 ${formatPlaytime(playTime)}</div>
                     </div>
-                `).join('');
+                    `;
+                }).join('');
             } catch (error) {
                 console.error('加载游戏库失败:', error);
                 document.getElementById('game-library').innerHTML = '<p>加载游戏库失败，请稍后重试</p>';
@@ -265,28 +284,45 @@
                 document.getElementById('profile-email').value = user.email;
                 
                 // 加载游戏时长统计
-                const playtimeResponse = await fetch(`${API_BASE_URL}/library/${user.playerId}/most-played`);
+                const playtimeResponse = await fetch(`${API_BASE_URL}/player-games/player/${user.playerId}/sort-by-play-time`);
                 if (playtimeResponse.ok) {
                     const playtimeData = await playtimeResponse.json();
+                    
+                    // 添加调试日志
+                    console.log('游戏时间统计数据:', playtimeData);
+                    if (playtimeData.length > 0) {
+                        console.log('时间统计第一条示例:', playtimeData[0]);
+                    }
+                    
                     const playtimeChart = document.getElementById('playtime-chart');
                     
                     if (playtimeData.length === 0) {
                         playtimeChart.innerHTML = '<p>您还没有游戏时长记录</p>';
                     } else {
-                        playtimeChart.innerHTML = playtimeData.map(game => `
+                        playtimeChart.innerHTML = playtimeData.map(item => {
+                            // 灵活处理属性名
+                            const playTime = item.playTimeMinutes !== undefined ? 
+                                           item.playTimeMinutes : 
+                                           (item.playTime !== undefined ? item.playTime : 0);
+                                           
+                            // 获取游戏名称
+                            const gameName = item.game.gameName || item.game.title || '未知游戏';
+                            
+                            return `
                             <div class="playtime-item" style="margin-bottom: 15px; padding: 10px; background: #252525; border-radius: 5px;">
                                 <div style="display: flex; align-items: center;">
-                                    <img src="../assets/images/games/${game.game.gameId}.jpg" alt="${game.game.title}" style="width: 80px; height: 45px; object-fit: cover; margin-right: 15px;">
+                                    <img src="${item.game.gameId}.jpg" alt="${gameName}" style="width: 80px; height: 45px; object-fit: cover; margin-right: 15px;">
                                     <div>
-                                        <h4 style="margin: 0 0 5px 0;">${game.game.title}</h4>
+                                        <h4 style="margin: 0 0 5px 0;">${gameName}</h4>
                                         <div style="height: 20px; background: #1a1a1a; width: 300px; border-radius: 10px; overflow: hidden;">
-                                            <div style="height: 100%; background: #66c0f4; width: ${Math.min(100, game.playTimeMinutes/10)}%"></div>
+                                            <div style="height: 100%; background: #66c0f4; width: ${Math.min(100, playTime/10)}%"></div>
                                         </div>
-                                        <p style="margin: 5px 0 0 0;">${formatPlaytime(game.playTimeMinutes)}</p>
+                                        <p style="margin: 5px 0 0 0;">${formatPlaytime(playTime)}</p>
                                     </div>
                                 </div>
                             </div>
-                        `).join('');
+                        `;
+                        }).join('');
                     }
                 }
             } catch (error) {

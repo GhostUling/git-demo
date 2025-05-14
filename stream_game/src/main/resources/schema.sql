@@ -133,14 +133,26 @@ INSERT INTO developer (developer_name, contact_email, username, password, compan
     ('Cyber Games', 'contact@cybergames.com', 'cyber_games', 'password123', '一家科技游戏开发公司', 1),
     ('DMC Studio', 'info@dmcstudio.com', 'dmc_studio', 'password123', '专注于动作游戏的开发工作室', 1),
     ('miHoYo', 'contact@mihoyo.com', 'mihoyo', 'password123', '知名游戏开发商', 1),
-    ('腾讯游戏', 'game@tencent.com', 'tencent', 'password123', '中国最大的游戏公司之一', 1);
+    ('腾讯游戏', 'game@tencent.com', 'tencent', 'password123', '中国最大的游戏公司之一', 1),
+    ('CD Projekt Red', 'info@cdprojektred.com', 'cdpr', 'password123', '波兰游戏开发商，知名作品《巫师》系列', 1),
+    ('FromSoftware', 'contact@fromsoftware.jp', 'fromsoftware', 'password123', '日本游戏开发商，黑魂系列开发者', 1),
+    ('Santa Monica Studio', 'info@sms.com', 'santamonica', 'password123', '索尼第一方工作室，战神系列开发商', 1),
+    ('Rockstar Games', 'info@rockstargames.com', 'rockstar', 'password123', '美国游戏开发商，GTA和荒野大镖客开发商', 1),
+    ('Respawn Entertainment', 'contact@respawn.com', 'respawn', 'password123', 'EA旗下工作室，泰坦陨落和星战绝地开发商', 1),
+    ('24Entertainment', 'contact@24entertainment.com', '24entertainment', 'password123', '永劫无间开发商', 1);
 
--- 插入游戏
-INSERT INTO game (game_name, game_type, price, description, developer_id) VALUES 
-    ('Cyber Adventure 2077', '角色扮演', 198.00, '一款开放世界角色扮演游戏，设定在未来的赛博朋克世界。', 1),
-    ('Devil May Cry 5', '动作冒险', 168.00, '一款充满爽快战斗体验的动作冒险游戏。', 2),
-    ('genshin-impact', '开放世界', 68.00, '一款开放世界的冒险游戏，拥有元素魔法系统。', 3),
-    ('王者荣耀', '多人在线竞技', 6.00, '中国最受欢迎的多人在线竞技游戏之一。', 4);
+-- 插入游戏（使用显式指定ID）
+ALTER TABLE game AUTO_INCREMENT = 1;
+INSERT INTO game (game_id, game_name, game_type, price, description, developer_id) VALUES 
+    (1, 'Cyber Adventure 2077', '角色扮演', 198.00, '一款开放世界角色扮演游戏，设定在未来的赛博朋克世界。', 1),
+    (2, 'Devil May Cry 5', '动作冒险', 168.00, '一款充满爽快战斗体验的动作冒险游戏。', 2),
+    (3, 'genshin-impact', '开放世界', 68.00, '一款开放世界的冒险游戏，拥有元素魔法系统。', 3),
+    (4, 'The Witcher 3: Wild Hunt', '角色扮演', 149.00, '一款著名的开放世界角色扮演游戏，玩家扮演猎魔人杰洛特展开冒险。', 5),
+    (5, 'Naraka Bladepoint', '动作', 98.00, '一款东方武侠风格的多人在线战斗游戏，强调近战格斗和机动性。', 10),
+    (6, 'Elden Ring', '动作角色扮演', 298.00, '由宫崎英高和乔治·R·R·马丁合作的开放世界动作角色扮演游戏。', 6),
+    (7, 'God of War', '动作冒险', 279.00, '北欧神话背景下的克雷多斯和儿子阿特柔斯的冒险故事。', 7),
+    (8, 'Red Dead Redemption 2', '开放世界', 249.00, '美国西部背景的开放世界游戏，讲述亚瑟·摩根的故事。', 8),
+    (9, 'Star Wars Jedi Fallen Order', '动作冒险', 198.00, '星球大战宇宙中的单人动作冒险游戏，讲述绝地武士的故事。', 9);
 
 -- 插入测试用户
 INSERT INTO player (username, password, email, registration_time, balance, account_active) VALUES 

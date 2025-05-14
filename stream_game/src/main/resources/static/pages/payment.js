@@ -1,5 +1,8 @@
 // payment.js - 支付页面专用逻辑
 document.addEventListener('DOMContentLoaded', () => {
+    // 全局API基础URL
+    const API_BASE_URL = 'http://localhost:8080/api';
+    
     // 获取购物车数据（与商城统一结构）
     const getCartData = () => {
         const defaultCart = { count: 0, items: [], total: 0 };
@@ -58,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 支付按钮逻辑
     const payButton = document.getElementById('pay-now-btn');
     if (payButton) {
-        payButton.addEventListener('click', () => {
+        payButton.addEventListener('click', async () => {
             const cart = getCartData();
             
             if (cart.count === 0) {
@@ -66,29 +69,108 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // 创建订单记录
-            const order = {
-                id: 'ORDER-' + Date.now().toString(36),
-                items: [...cart.items],
-                total: cart.total,
-                date: new Date().toISOString()
-            };
+            // 获取当前用户信息
+            const currentUser = JSON.parse(localStorage.getItem('currentPlayer'));
+            if (!currentUser) {
+                alert('请先登录后再购买游戏');
+                window.location.href = 'login.html';
+                return;
+            }
 
-            // 保存订单历史
-            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-            orders.push(order);
-            localStorage.setItem('orders', JSON.stringify(orders));
+            try {
+                // 打印购物车内容，帮助调试
+                console.log("购物车内容:", cart.items);
+                
+                // 使用批量购买API，由后端处理游戏名称匹配和购买流程
+                const response = await fetch(`${API_BASE_URL}/transactions/purchase-cart`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        playerId: currentUser.playerId,
+                        items: cart.items
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('购买失败:', errorText);
+                    throw new Error('批量购买处理失败');
+                }
+                
+                // 处理返回结果
+                const result = await response.json();
+                console.log('购买结果:', result);
+                
+                // 向用户显示购买结果
+                if (result.success) {
+                    alert(`购买成功！${result.successCount}个游戏已添加到您的游戏库`);
+                } else {
+                    alert(`部分游戏购买失败：${result.message}\n成功：${result.successCount}，失败：${result.failCount}`);
+                    console.error('失败详情:', result.errors);
+                }
+                
+                // 为每个成功购买的游戏添加到玩家游戏库
+                const successfulTransactions = result.transactions || [];
+                for (const transaction of successfulTransactions) {
+                    const gameId = transaction.game.gameId;
+                    
+                    try {
+                        // 添加到用户游戏库
+                        const playerGameResponse = await fetch(`${API_BASE_URL}/player-games`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                player: {
+                                    playerId: currentUser.playerId
+                                },
+                                game: {
+                                    gameId: gameId
+                                },
+                                playTimeMinutes: 0
+                            })
+                        });
+                        
+                        if (!playerGameResponse.ok) {
+                            console.error(`添加到游戏库失败: ${await playerGameResponse.text()}`);
+                        }
+                    } catch (error) {
+                        console.error(`添加游戏${gameId}到库时出错:`, error);
+                    }
+                }
 
-            // 清空购物车
-            localStorage.setItem('cart', JSON.stringify({
-                count: 0,
-                items: [],
-                total: 0
-            }));
+                // 创建订单记录
+                const order = {
+                    id: 'ORDER-' + Date.now().toString(36),
+                    items: [...cart.items],
+                    total: cart.total,
+                    date: new Date().toISOString(),
+                    successCount: result.successCount,
+                    failCount: result.failCount
+                };
 
-            // 显示支付成功
-            document.querySelector('.payment-success').style.display = 'block';
-            document.querySelectorAll('.cart-counter').forEach(c => c.textContent = '0');
+                // 保存订单历史
+                const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+                orders.push(order);
+                localStorage.setItem('orders', JSON.stringify(orders));
+
+                // 清空购物车
+                localStorage.setItem('cart', JSON.stringify({
+                    count: 0,
+                    items: [],
+                    total: 0
+                }));
+
+                // 显示支付成功
+                document.querySelector('.payment-success').style.display = 'block';
+                document.querySelectorAll('.cart-counter').forEach(c => c.textContent = '0');
+            } catch (error) {
+                console.error('支付处理错误:', error);
+                alert('购买处理时出错: ' + error.message);
+            }
         });
     }
 

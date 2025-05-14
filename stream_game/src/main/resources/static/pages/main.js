@@ -507,6 +507,7 @@ const GameManager = {
                     gameData.banner = await this.compressImage(gameData.banner);
                 }
                 
+                // 保存到localStorage
                 // 获取已上传的游戏列表
                 const uploadedGames = this.getUploadedGames();
                 
@@ -525,6 +526,65 @@ const GameManager = {
                 
                 // 保存到localStorage
                 await this.saveGames(uploadedGames);
+                
+                // 同时提交到后端API
+                try {
+                    // 获取当前开发者ID（假设开发者信息存储在localStorage中）
+                    const currentUser = JSON.parse(localStorage.getItem('currentPlayer'));
+                    if (!currentUser || !currentUser.playerId) {
+                        throw new Error('未登录或不是开发者账号');
+                    }
+                    
+                    // 创建表单数据
+                    const formData = new FormData();
+                    formData.append('developerId', currentUser.playerId); // 使用用户ID作为开发者ID
+                    formData.append('gameName', gameData.title);
+                    formData.append('version', '1.0'); // 默认版本号
+                    formData.append('description', `${gameData.description}\n价格: ${gameData.price}`);
+                    
+                    // 如果有图片，转换为文件对象
+                    if (gameData.banner && gameData.banner.startsWith('data:')) {
+                        const blob = await fetch(gameData.banner).then(r => r.blob());
+                        const file = new File([blob], `${gameData.title}.jpg`, { type: 'image/jpeg' });
+                        formData.append('file', file);
+                    } else {
+                        // 使用默认图片文件（此处需要页面上有一个隐藏的文件输入）
+                        const fileInput = document.querySelector('input[type="file"]');
+                        if (fileInput && fileInput.files.length > 0) {
+                            formData.append('file', fileInput.files[0]);
+                        } else {
+                            throw new Error('缺少游戏安装包文件');
+                        }
+                    }
+                    
+                    // 发送到后端API
+                    const response = await fetch('http://localhost:8080/api/game-upload/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`上传失败: ${response.status} ${response.statusText}`);
+                    }
+                    
+                    const result = await response.json();
+                    console.log('后端上传成功:', result);
+                    
+                    // 合并后端返回的数据
+                    Object.assign(newGame, { 
+                        backendId: result.id,
+                        uploadStatus: 'pending'
+                    });
+                    
+                } catch (apiError) {
+                    console.error('后端API上传失败:', apiError);
+                    // 记录错误但不阻止本地存储
+                    Object.assign(newGame, { 
+                        uploadStatus: 'failed',
+                        error: apiError.message
+                    });
+                }
+                
                 resolve(newGame);
             } catch (error) {
                 reject(error);

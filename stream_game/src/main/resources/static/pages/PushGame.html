@@ -6,6 +6,29 @@
     <title>发布游戏</title>
     <link rel="stylesheet" href="style.css">
     <script src="main.js"></script>
+    <style>
+        .status-message {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .status-success {
+            background-color: #a1cd44;
+            color: #333;
+        }
+        
+        .status-error {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .status-pending {
+            background-color: #f39c12;
+            color: white;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">
@@ -102,10 +125,26 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="form-section">
+                        <label class="form-label">游戏安装包</label>
+                        <input type="file" class="form-input" id="gameFile" accept=".zip,.rar,.7z" required>
+                        <small>支持的格式: .zip, .rar, .7z (最大100MB)</small>
+                    </div>
                 </div>
 
                 <div class="form-submit">
                     <button type="submit" class="buy-btn" id="submit-btn">发布游戏</button>
+                </div>
+
+                <div class="status-message status-success" id="success-message">
+                    游戏上传成功！您的游戏已提交审核，审核通过后将出现在游戏商城中。
+                </div>
+                <div class="status-message status-error" id="error-message">
+                    上传失败，请检查网络连接并重试。
+                </div>
+                <div class="status-message status-pending" id="pending-message">
+                    正在上传游戏文件，请耐心等待...
                 </div>
             </form>
         </div>
@@ -151,6 +190,15 @@
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            // 隐藏所有状态消息
+            document.querySelectorAll('.status-message').forEach(msg => msg.style.display = 'none');
+            
+            // 显示等待消息
+            document.getElementById('pending-message').style.display = 'block';
+            
+            // 禁用提交按钮
+            document.getElementById('submit-btn').disabled = true;
+            
             // 验证表单数据
             const gameData = {
                 title: document.getElementById('gameTitle').value,
@@ -168,6 +216,20 @@
 
             // 验证数据
             if (!validateGameData(gameData)) {
+                document.getElementById('pending-message').style.display = 'none';
+                document.getElementById('error-message').textContent = '数据验证失败，请检查输入内容';
+                document.getElementById('error-message').style.display = 'block';
+                document.getElementById('submit-btn').disabled = false;
+                return;
+            }
+
+            // 验证游戏文件
+            const gameFile = document.getElementById('gameFile').files[0];
+            if (!gameFile) {
+                document.getElementById('pending-message').style.display = 'none';
+                document.getElementById('error-message').textContent = '请选择游戏安装包文件';
+                document.getElementById('error-message').style.display = 'block';
+                document.getElementById('submit-btn').disabled = false;
                 return;
             }
 
@@ -178,18 +240,44 @@
                     gameData.banner = await convertToBase64(bannerFile);
                 } catch (error) {
                     console.error('图片处理失败:', error);
-                    alert('图片处理失败，请重试');
+                    document.getElementById('pending-message').style.display = 'none';
+                    document.getElementById('error-message').textContent = '图片处理失败，请重试';
+                    document.getElementById('error-message').style.display = 'block';
+                    document.getElementById('submit-btn').disabled = false;
                     return;
                 }
             }
             
             try {
-                await GameManager.uploadGame(gameData);
-                alert('游戏上传成功！');
-                window.location.href = 'profile.html'; // 上传成功后跳转到个人中心
+                const result = await GameManager.uploadGame(gameData);
+                console.log('上传结果:', result);
+                
+                if (result.uploadStatus === 'failed') {
+                    throw new Error(result.error || '上传失败');
+                }
+                
+                // 隐藏等待消息
+                document.getElementById('pending-message').style.display = 'none';
+                
+                // 显示成功消息
+                document.getElementById('success-message').style.display = 'block';
+                
+                // 3秒后重定向
+                setTimeout(() => {
+                    window.location.href = 'profile.html';
+                }, 3000);
             } catch (error) {
                 console.error('上传失败:', error);
-                alert('上传失败，请重试');
+                
+                // 隐藏等待消息
+                document.getElementById('pending-message').style.display = 'none';
+                
+                // 显示错误消息
+                document.getElementById('error-message').textContent = '上传失败: ' + error.message;
+                document.getElementById('error-message').style.display = 'block';
+                
+                // 启用提交按钮
+                document.getElementById('submit-btn').disabled = false;
             }
         });
         
