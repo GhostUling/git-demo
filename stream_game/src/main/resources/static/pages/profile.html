@@ -179,30 +179,88 @@
         
         // 页面初始化逻辑
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('页面已加载');
+            
+            // 添加调试代码
+            window.testNav = function() {
+                console.log('测试导航开始');
+                const sections = document.querySelectorAll('.content-section');
+                console.log('找到内容区域数量:', sections.length);
+                sections.forEach(section => {
+                    console.log(`区域ID: ${section.id}, 显示状态:`, section.style.display);
+                });
+                
+                const navItems = document.querySelectorAll('.sidebar .nav-item');
+                console.log('找到导航项数量:', navItems.length);
+                
+                // 遍历测试每个导航项的点击效果
+                navItems.forEach((item, index) => {
+                    console.log(`将在3秒后测试点击[${item.textContent}]...`);
+                    setTimeout(() => {
+                        console.log(`模拟点击[${item.textContent}]`);
+                        item.click();
+                        
+                        // 检查结果
+                        setTimeout(() => {
+                            const activeSection = document.querySelector('.content-section[style*="display: block"]');
+                            console.log('当前活动区域:', activeSection ? activeSection.id : '无');
+                            sections.forEach(section => {
+                                console.log(`区域ID: ${section.id}, 显示状态:`, section.style.display);
+                            });
+                        }, 500);
+                    }, index * 3000);
+                });
+            };
+            
             // 登录状态检查
             const currentUser = JSON.parse(localStorage.getItem('currentPlayer'));
             
-            // 导航切换
-            document.querySelectorAll('.nav-item').forEach(item => {
+            // 手动注册导航事件
+            document.querySelectorAll('.sidebar .nav-item').forEach(item => {
                 item.addEventListener('click', function(e) {
                     e.preventDefault();
-                    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-                    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                    console.log('点击了导航项:', this.textContent, '目标:', this.getAttribute('href'));
+                    
+                    // 移除所有导航项的active类
+                    document.querySelectorAll('.sidebar .nav-item').forEach(nav => {
+                        nav.classList.remove('active');
+                    });
+                    
+                    // 为当前点击的导航项添加active类
                     this.classList.add('active');
-                    document.querySelector(this.getAttribute('href')).classList.add('active');
+                    
+                    // 获取目标内容区域ID
+                    const targetId = this.getAttribute('href').substring(1);
+                    
+                    // 隐藏所有内容区域
+                    document.querySelectorAll('.content-section').forEach(section => {
+                        section.style.display = 'none';
+                        console.log('隐藏区域:', section.id);
+                    });
+                    
+                    // 显示目标内容区域
+                    const targetSection = document.getElementById(targetId);
+                    if (targetSection) {
+                        targetSection.style.display = 'block';
+                        console.log('显示区域:', targetId);
+                    } else {
+                        console.warn('未找到目标区域:', targetId);
+                    }
                 });
             });
-
+            
             // 检查用户是否登录，若登录则加载数据，否则显示提示信息
             if (currentUser) {
                 // 用户已登录，加载游戏库和个人信息
                 loadGameLibrary(currentUser.playerId);
                 loadProfileInfo(currentUser);
                 
-                // 显示用户数据
-                document.querySelectorAll('.content-section').forEach(section => {
-                    section.style.display = section.classList.contains('active') ? 'block' : 'none';
-                });
+                // 默认显示第一个内容区域
+                const firstNavItem = document.querySelector('.sidebar .nav-item');
+                if (firstNavItem) {
+                    console.log('默认点击第一个导航项');
+                    firstNavItem.click();
+                }
             } else {
                 // 用户未登录，显示提示信息
                 document.querySelectorAll('.content-section').forEach(section => {
@@ -221,6 +279,23 @@
                 `;
                 document.querySelector('.content-container').appendChild(loginPrompt);
             }
+            
+            // 处理表单提交
+            document.getElementById('profile-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveProfile(e);
+            });
+            
+            document.getElementById('security-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                changePassword(e);
+            });
+            
+            // 调试函数，页面加载10秒后自动运行测试
+            setTimeout(() => {
+                console.log('准备运行导航测试...');
+                window.testNav();
+            }, 10000);
         });
 
         // 加载游戏库数据
@@ -329,10 +404,9 @@
                 console.error('加载个人信息失败:', error);
             }
         }
-
-        // 处理个人信息表单提交
-        document.getElementById('profile-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
+        
+        // 保存个人信息
+        async function saveProfile(event) {
             const currentUser = JSON.parse(localStorage.getItem('currentPlayer'));
             if (!currentUser) {
                 alert('请先登录');
@@ -363,11 +437,10 @@
                 console.error('更新个人信息失败:', error);
                 alert('更新个人信息失败: ' + error.message);
             }
-        });
+        }
         
-        // 处理修改密码表单提交
-        document.getElementById('security-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
+        // 修改密码
+        async function changePassword(event) {
             const currentUser = JSON.parse(localStorage.getItem('currentPlayer'));
             if (!currentUser) {
                 alert('请先登录');
@@ -424,7 +497,7 @@
                 console.error('修改密码失败:', error);
                 alert('修改密码失败: ' + error.message);
             }
-        });
+        }
     </script>
 </body>
 </html>

@@ -192,28 +192,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 加入购物车逻辑
     document.querySelectorAll('.buy-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const gameCard = this.closest('.game-card');
-            if (!gameCard) return;
-            
-            const gameInfo = {
-                id: gameCard.dataset.gameId,
-                title: gameCard.querySelector('.game-title')?.textContent || '未知游戏',
-                price: parseFloat(gameCard.querySelector('.price')?.textContent.replace(/[^0-9.]/g, '') || '0')
-            };
+        // 检查是否已经绑定了点击事件，避免重复绑定
+        if (!button.hasClickListener) {
+            button.hasClickListener = true;
+            button.addEventListener('click', function() {
+                const gameCard = this.closest('.game-card');
+                if (!gameCard) return;
+                
+                const gameInfo = {
+                    id: gameCard.dataset.gameId,
+                    title: gameCard.querySelector('.game-title')?.textContent || '未知游戏',
+                    price: parseFloat(gameCard.querySelector('.price')?.textContent.replace(/[^0-9.]/g, '') || '0')
+                };
 
-            // 添加到购物车
-            cart.count++;
-            cart.items.push(gameInfo);
-            cart.total += gameInfo.price;
-            localStorage.setItem('cart', JSON.stringify(cart));
-            
-            // 飞入动画
-            const flyItem = createFlyItem(this, gameCard);
-            animateToCart(flyItem, () => {
-                updateCartDisplay();
+                // 添加到购物车
+                cart.count++;
+                cart.items.push(gameInfo);
+                cart.total += gameInfo.price;
+                localStorage.setItem('cart', JSON.stringify(cart));
+                
+                // 飞入动画
+                const flyItem = createFlyItem(this, gameCard);
+                animateToCart(flyItem, () => {
+                    updateCartDisplay();
+                });
             });
-        });
+        }
     });
 
     // 移除商品逻辑
