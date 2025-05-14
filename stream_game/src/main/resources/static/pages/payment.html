@@ -1,157 +1,117 @@
-<!-- 支付页 payment.html -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>结算 - Stream</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>支付订单 - Stream</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 支付页面专属样式 */
+        .payment-container {
+            max-width: 800px;
+            margin: 100px auto;
+            padding: 30px;
+            background: #1a1a1a;
+            border-radius: 10px;
+        }
+
+        .order-summary {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #252525;
+            border-radius: 8px;
+        }
+
+        #pay-now-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+        }
+
+        .payment-success {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #1a1a1a;
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        .success-checkmark {
+            font-size: 48px;
+            color: #a1cd44;
+            margin-bottom: 20px;
+        }
+    </style>
+	<script src="payment.js"></script>
 </head>
 <body>
+    <!-- 共用导航栏 -->
     <nav class="navbar">
+        <!-- 保持与首页相同的导航栏代码 -->
         <div class="nav-content">
-            <!-- 左侧logo -->
-            <a href="../index.html" class="logo">Stream</a>
-            
-            <!-- 搜索框 -->
-            <div class="search-container">
-                <form id="search-form">
-                    <input type="text" 
-                           placeholder="搜索游戏..." 
-                           class="search-input"
-                           id="search-input">
-                    <button type="submit" class="search-btn">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#b8b6b4" stroke-width="2">
-                            <circle cx="11" cy="11" r="8"/>
-                            <path d="M21 21l-4.35-4.35"/>
-                        </svg>
-                    </button>
-                </form>
-            </div>
-    
-            <!-- 右侧导航链接 -->
+            <a href="index.html" class="logo">Stream</a>
             <div class="nav-links">
-                <a href="../index.html">商城</a>
-                <a href="cart.html">购物车 <span class="cart-counter">3</span></a>
-                <a href="about.html">关于</a>
-                <a href="login.html">登录/注册</a>
+                <a href="index.html">商城</a>
+                <a href="cart.html">购物车 <span class="cart-counter">0</span></a>
+                <a href="profile.html">个人中心</a>
+                <a href="pushgame.html">发布游戏</a>
+				<a href="about.html">关于</a>
             </div>
         </div>
     </nav>
 
+    <!-- 在<body>标签内替换原有订单部分 -->
     <div class="container">
-        <h1 style="color: #fff; margin-bottom: 30px;">结算</h1>
-        
         <div class="payment-container">
+            <h1>订单详情</h1>
             <div class="order-summary">
-                <h2 style="color: #fff; margin-bottom: 20px;">订单摘要</h2>
-                
-                <div class="cart-items" id="order-items">
-                    <div class="cart-item" data-id="game1">
-                        <img src="../assets/images/Cyber Adventure 2077.jpg" alt="Game 1">
-                        <div class="item-info">
-                            <h3>Cyber Adventure 2077</h3>
-                            <p>¥198.00</p>
-                        </div>
-                    </div>
-                    
-                    <div class="cart-item" data-id="game2">
-                        <img src="../assets/images/Devil May Cry 5.jpg" alt="Game 2">
-                        <div class="item-info">
-                            <h3>Devil May Cry 5</h3>
-                            <p>¥168.00</p>
-                        </div>
-                    </div>
-                    
-                    <div class="cart-item" data-id="game3">
-                        <img src="../assets/images/genshin-impact.jpg" alt="Game 3">
-                        <div class="item-info">
-                            <h3>Genshin Impact</h3>
-                            <p>¥68.00</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="cart-total" style="border-top: 1px solid #324353; padding-top: 20px; margin-top: 20px;">
-                    <h3>总计: <span id="total-price">¥434.00</span></h3>
-                </div>
+                <div id="order-items" class="order-items-container"></div>
+                <p id="total-amount" class="total-amount"></p>
             </div>
-            
-            <div class="payment-form">
-                <h2 style="color: #fff; margin-bottom: 20px;">支付信息</h2>
-                
-                <div class="card-icons">
-                    <img src="../assets/images/visa.png" alt="Visa" class="card-icon">
-                    <img src="../assets/images/mastercard.png" alt="Mastercard" class="card-icon">
-                    <img src="../assets/images/alipay.png" alt="Alipay" class="card-icon">
-                    <img src="../assets/images/wechat.png" alt="WeChat Pay" class="card-icon">
-                </div>
-                
-                <form id="payment-form">
-                    <div class="form-group">
-                        <label for="cardholder-name" class="form-label">持卡人姓名</label>
-                        <input type="text" id="cardholder-name" class="form-input" placeholder="请输入持卡人姓名" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="card-number" class="form-label">卡号</label>
-                        <input type="text" id="card-number" class="form-input" placeholder="1234 5678 9012 3456" required>
-                    </div>
-                    
-                    <div style="display: flex; gap: 15px;">
-                        <div class="form-group" style="flex: 1;">
-                            <label for="expiry-date" class="form-label">有效期</label>
-                            <input type="text" id="expiry-date" class="form-input" placeholder="MM/YY" required>
-                        </div>
-                        
-                        <div class="form-group" style="flex: 1;">
-                            <label for="cvv" class="form-label">CVV</label>
-                            <input type="text" id="cvv" class="form-input" placeholder="123" required>
-                        </div>
-                    </div>
-                    
-                    <div class="secure-payment">
-                        <span class="lock-icon">🔒</span>
-                        <span>安全支付，您的信息受到保护</span>
-                    </div>
-                    
-                    <button type="submit" class="confirm-btn">确认支付</button>
-                </form>
-            </div>
+            <button id="pay-now-btn" class="buy-btn">立即支付</button>
+        </div>
+    
+        <!-- 支付成功弹窗保持不变 -->
+        <div class="payment-success">
+            <div class="success-checkmark">✓</div>
+            <h2>支付成功！</h2>
+            <p>您的订单已处理完成</p>
+            <button onclick="location.href='index.html'" class="slide-btn">
+                返回主页
+            </button>
         </div>
     </div>
-
-    <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h4>关于我们</h4>
-                <a href="#">制作人员名单</a>
-            </div>
-            <div class="footer-section">
-                <h4>客户服务</h4>
-                <a href="#">帮助中心</a>
-                <a href="#">常见问题</a>
-            </div>
-            <div class="footer-section">
-                <h4>法律条款</h4>
-                <a href="#">隐私政策</a>
-                <a href="#">用户协议</a>
-            </div>
-            <div class="footer-section">
-                <h4>关注我们</h4>
-                <a href="#">QQ</a>
-                <a href="#">微信</a>
-                <a href="#">GitHub</a>
-            </div>
-        </div>
-    </footer>
-
-    <script src="../assets/js/main.js"></script>
-    <script>
-        document.getElementById('payment-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('支付成功！感谢您的购买。');
-            window.location.href = '../index.html';
-        });
-    </script>
+	
+	<footer>
+	    <div class="footer-content">
+	        <div class="footer-section">
+	            <h4>关于我们</h4>
+	            <a href="about.html">联系我们</a>
+	            <a href="team.html">制作人员名单</a>
+	        </div>
+	        <div class="footer-section">
+	            <h4>客户服务</h4>
+	            <a href="https://www.deepseek.com/">帮助中心</a>
+	            <a href="question.html">常见问题</a>
+	        </div>
+	        <div class="footer-section">
+	            <h4>法律条款</h4>
+	            <a href=#>隐私政策</a>
+	            <a href=#>用户协议</a>
+	        </div>
+	        <div class="footer-section">
+	            <h4>关注我们</h4>
+	            <a href="qq.jpg" title="qq">QQ</a>
+	            <a href="weixin.jpg" title="微信">微信</a>
+	            <a href="https://github.com" target="_blank">GitHub</a>
+	        </div>
+	    </div>
+	</footer>
+	
 </body>
 </html>

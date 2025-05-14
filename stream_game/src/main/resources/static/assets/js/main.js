@@ -351,7 +351,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(player => {
                 console.log('登录成功:', player);
                 localStorage.setItem('currentPlayer', JSON.stringify(player));
-                window.location.href = 'index.html';
+                window.location.href = 'pages/index.html';
             })
             .catch(error => {
                 console.error('登录错误:', error);

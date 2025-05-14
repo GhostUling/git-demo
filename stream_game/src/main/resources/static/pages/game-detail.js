@@ -128,7 +128,7 @@ function renderError() {
             <div class="error-message">
                 <h2>游戏不存在</h2>
                 <p>找不到对应的游戏信息，可能已被删除或链接错误。</p>
-                <a href="../index.html" class="btn">返回商城</a>
+                <a href="index.html" class="btn">返回商城</a>
             </div>
         `;
     }

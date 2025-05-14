@@ -102,22 +102,36 @@ public class PlayerController {
         String username = (String) request.get("username");
         String password = (String) request.get("password");
         
+        // 记录注册请求
+        org.slf4j.LoggerFactory.getLogger(PlayerController.class)
+            .info("收到注册请求: username={}, email={}, verificationCode={}", username, email, verificationCode);
+        
         if (email == null || verificationCode == null || username == null || password == null) {
+            org.slf4j.LoggerFactory.getLogger(PlayerController.class)
+                .warn("注册参数不完整: email={}, username={}", email, username);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         
         // 检查用户名是否已存在
         if (playerService.getPlayerByUsername(username) != null) {
+            org.slf4j.LoggerFactory.getLogger(PlayerController.class)
+                .warn("用户名已存在: {}", username);
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
         
         // 检查邮箱是否已存在
         if (playerService.getPlayerByEmail(email) != null) {
+            org.slf4j.LoggerFactory.getLogger(PlayerController.class)
+                .warn("邮箱已存在: {}", email);
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
         
         // 检查验证码是否有效（不验证，因为前端已经验证过）
-        if (!emailService.checkEmailAndVerificationCode(email, verificationCode)) {
+        boolean isCodeValid = emailService.checkEmailAndVerificationCode(email, verificationCode);
+        org.slf4j.LoggerFactory.getLogger(PlayerController.class)
+            .info("验证码检查结果: {}", isCodeValid ? "有效" : "无效");
+            
+        if (!isCodeValid) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
@@ -126,11 +140,22 @@ public class PlayerController {
         player.setPassword(password);
         player.setEmail(email);
         
-        Player registeredPlayer = playerService.register(player);
-        if (registeredPlayer == null) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        try {
+            Player registeredPlayer = playerService.register(player);
+            if (registeredPlayer == null) {
+                org.slf4j.LoggerFactory.getLogger(PlayerController.class)
+                    .error("注册失败: username={}, email={}", username, email);
+                return new ResponseEntity<>(HttpStatus.CONFLICT);
+            }
+            
+            org.slf4j.LoggerFactory.getLogger(PlayerController.class)
+                .info("注册成功: playerId={}, username={}", registeredPlayer.getPlayerId(), username);
+            return new ResponseEntity<>(registeredPlayer, HttpStatus.CREATED);
+        } catch (Exception e) {
+            org.slf4j.LoggerFactory.getLogger(PlayerController.class)
+                .error("注册过程发生异常: {}", e.getMessage(), e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(registeredPlayer, HttpStatus.CREATED);
     }
 
     // 玩家登录

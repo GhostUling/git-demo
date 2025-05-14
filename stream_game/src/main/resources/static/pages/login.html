@@ -101,7 +101,7 @@
 		<nav class="navbar">
 			<div class="nav-content">
 				<!-- 左侧logo -->
-				<a href="../index.html" class="logo">Stream</a>
+				<a href="index.html" class="logo">Stream</a>
 				
 				<!-- 搜索框 -->
 				<div class="search-container">
@@ -121,7 +121,7 @@
 	
 				<!-- 右侧导航链接 -->
 				<div class="nav-links">
-					<a href="../index.html">商城</a>
+					<a href="index.html">商城</a>
 					<a href="cart.html">购物车 <span class="cart-counter">0</span></a>
 					<a href="about.html">关于</a>
 					<a href="login.html" class="active">登录/注册</a>
@@ -156,6 +156,11 @@
 				<!-- 注册表单 -->
 				<div class="register-form" id="register-form-container">
 					<h2 class="login-title">创建账户</h2>
+					<div class="reg-guide">
+						<p style="color: #9cbcce; font-size: 13px; margin-bottom: 20px; text-align: center;">
+							注册流程：1.输入信息 → 2.发送验证码 → 3.验证邮箱 → 4.完成注册
+						</p>
+					</div>
 					<form id="register-form">
 						<div class="form-group">
 							<label for="reg-username" class="form-label">用户名</label>
@@ -171,6 +176,10 @@
 								<input type="text" id="reg-verification-code" class="form-input" style="flex: 1;" placeholder="请输入验证码" required>
 								<button type="button" id="send-code-btn" class="login-btn" style="width: 120px;">发送验证码</button>
 							</div>
+							<span style="color: #66c0f4; font-size: 12px; margin-top: 5px; display: block;">
+								验证码将发送至您的邮箱，15分钟内有效
+							</span>
+							<div id="verification-status" style="color: #66c0f4; font-size: 12px; margin-top: 5px; display: none;"></div>
 						</div>
 						<div class="form-group">
 							<label for="reg-password" class="form-label">密码</label>
@@ -179,6 +188,14 @@
 						<div class="form-group">
 							<label for="reg-confirm-password" class="form-label">确认密码</label>
 							<input type="password" id="reg-confirm-password" class="form-input" placeholder="请再次输入密码" required>
+						</div>
+						<div class="form-group" style="margin-top: 15px;">
+							<div style="display: flex; align-items: center;">
+								<input type="checkbox" id="agreement" required style="margin-right: 10px;">
+								<label for="agreement" style="color: #9cbcce; font-size: 13px;">
+									我已阅读并同意 <a href="#" style="color: #66c0f4; text-decoration: none;">用户协议</a> 和 <a href="#" style="color: #66c0f4; text-decoration: none;">隐私政策</a>
+								</label>
+							</div>
 						</div>
 						<button type="submit" class="login-btn">注册</button>
 					</form>
@@ -268,7 +285,7 @@
 							// 保存登录状态
 							localStorage.setItem('currentPlayer', JSON.stringify(player));
 							// 跳转至首页
-							window.location.href = '../index.html';
+							window.location.href = 'index.html';
 						})
 						.catch(error => {
 							alert(error.message);
@@ -288,6 +305,13 @@
 							return;
 						}
 						
+						// 验证邮箱格式
+						const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+						if (!emailRegex.test(email)) {
+							alert('请输入有效的邮箱地址');
+							return;
+						}
+						
 						// 禁用按钮，防止重复发送
 						sendCodeBtn.disabled = true;
 						sendCodeBtn.textContent = '发送中...';
@@ -303,12 +327,21 @@
 						})
 						.then(response => {
 							if (!response.ok) {
+								if (response.status === 409) {
+									throw new Error('该邮箱已被注册');
+								}
 								throw new Error('发送验证码失败');
 							}
 							return response.json();
 						})
 						.then(data => {
 							alert('验证码已发送到您的邮箱，请查收');
+							console.log('验证码发送响应:', data);
+							
+							// 显示验证码状态
+							const statusDiv = document.getElementById('verification-status');
+							statusDiv.textContent = '验证码已发送，请查收邮箱';
+							statusDiv.style.display = 'block';
 							
 							// 倒计时60秒后重新启用按钮
 							let countdown = 60;
@@ -339,6 +372,32 @@
 						const verificationCode = document.getElementById('reg-verification-code').value;
 						const password = document.getElementById('reg-password').value;
 						const confirmPassword = document.getElementById('reg-confirm-password').value;
+						const agreement = document.getElementById('agreement').checked;
+						
+						// 检查用户协议是否同意
+						if (!agreement) {
+							alert('请阅读并同意用户协议和隐私政策');
+							return;
+						}
+						
+						// 验证用户名格式
+						if (username.length < 3 || username.length > 20) {
+							alert('用户名长度应在3-20个字符之间');
+							return;
+						}
+						
+						// 验证邮箱格式
+						const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+						if (!emailRegex.test(email)) {
+							alert('请输入有效的邮箱地址');
+							return;
+						}
+						
+						// 验证密码强度
+						if (password.length < 6) {
+							alert('密码长度至少为6个字符');
+							return;
+						}
 						
 						if (password !== confirmPassword) {
 							alert('两次输入的密码不一致');
@@ -349,6 +408,12 @@
 							alert('请输入验证码');
 							return;
 						}
+						
+						// 显示加载状态
+						const submitButton = registerForm.querySelector('button[type="submit"]');
+						const originalText = submitButton.textContent;
+						submitButton.disabled = true;
+						submitButton.textContent = '处理中...';
 						
 						// 先验证验证码
 						fetch('http://localhost:8080/api/email-verification/verify', {
@@ -374,6 +439,7 @@
 							}
 							
 							// 验证码验证成功，继续注册
+							console.log('验证成功，开始注册用户...');
 							return fetch('http://localhost:8080/api/players/register', {
 								method: 'POST',
 								headers: {
@@ -393,10 +459,17 @@
 								return response; // 这是第一个fetch的结果，直接传递给下一个then
 							}
 							
+							console.log('注册请求响应状态:', response.status);
 							if (response.status === 409) {
 								throw new Error('用户名或邮箱已存在');
 							}
+							if (response.status === 401) {
+								throw new Error('验证码验证失败');
+							}
 							if (!response.ok) {
+								response.text().then(text => {
+									console.error('注册失败详情:', text);
+								});
 								throw new Error('注册失败');
 							}
 							return response.json();
@@ -412,10 +485,17 @@
 							// 切换到登录表单
 							registerFormContainer.style.display = 'none';
 							loginFormContainer.style.display = 'block';
+							// 自动填充用户名
+							document.getElementById('username').value = username;
 						})
 						.catch(error => {
 							console.error('注册流程错误:', error);
 							alert(error.message);
+						})
+						.finally(() => {
+							// 恢复按钮状态
+							submitButton.disabled = false;
+							submitButton.textContent = originalText;
 						});
 					});
 				}

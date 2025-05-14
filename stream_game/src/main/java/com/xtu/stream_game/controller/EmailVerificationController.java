@@ -64,6 +64,8 @@ public class EmailVerificationController {
             Map<String, Object> response = new HashMap<>();
             response.put("verified", isValid);
             response.put("message", isValid ? "验证成功" : "验证码无效或已过期");
+            response.put("email", email);
+            response.put("code", code);
             
             if (!isValid) {
                 logger.warn("验证失败，可能的原因: 验证码无效、已过期或已被使用");

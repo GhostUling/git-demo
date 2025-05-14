@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <title>购物车 - Stream</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <nav class="navbar">
         <div class="nav-content">
             <!-- 左侧logo -->
-            <a href="../index.html" class="logo">Stream</a>
+            <a href="index.html" class="logo">Stream</a>
             
             <!-- 搜索框 -->
             <div class="search-container">
@@ -30,81 +30,65 @@
     
             <!-- 右侧导航链接 -->
             <div class="nav-links">
-                <a href="../index.html">商城</a>
-                <a href="cart.html" class="active">购物车 <span class="cart-counter">0</span></a>
+                <a href="index.html">商城</a>
+                <a href="cart.html">购物车 <span class="cart-counter">0</span></a>
                 <a href="profile.html">个人中心</a>
                 <a href="login.html">登录/注册</a>
-                <a href="PushGame.html">发布游戏</a>
+                <a href="pushgame.html">发布游戏</a>
                 <a href="about.html">关于</a>
             </div>
         </div>
     </nav>
 
-    <div class="container">
-        <div class="cart-container">
-            <h1 class="cart-header">您的购物车</h1>
-            
-            <div class="cart-items" id="cart-items">
-                <div class="cart-item" data-id="game1">
-                    <img src="../assets/images/Cyber Adventure 2077.jpg" alt="Game 1">
-                    <div class="item-info">
-                        <h3>Cyber Adventure 2077</h3>
-                        <p>¥198.00</p>
-                    </div>
-                    <button class="remove-btn">删除</button>
-                </div>
-                
-                <div class="cart-item" data-id="game2">
-                    <img src="../assets/images/Devil May Cry 5.jpg" alt="Game 2">
-                    <div class="item-info">
-                        <h3>Devil May Cry 5</h3>
-                        <p>¥168.00</p>
-                    </div>
-                    <button class="remove-btn">删除</button>
-                </div>
-                
-                <div class="cart-item" data-id="game3">
-                    <img src="../assets/images/genshin-impact.jpg" alt="Game 3">
-                    <div class="item-info">
-                        <h3>Genshin Impact</h3>
-                        <p>¥68.00</p>
-                    </div>
-                    <button class="remove-btn">删除</button>
-                </div>
-            </div>
-            
-            <div class="cart-total">
-                <h3>总计: <span id="total-price">¥434.00</span></h3>
-                <a href="payment.html" class="checkout-btn">结算</a>
-            </div>
-        </div>
-    </div>
-
+	<div class="container">
+	        <div class="cart-container">
+	            <!-- 空购物车提示 -->
+	            <div class="empty-cart">
+	                <img src="../assets/images/empty-cart.svg" alt="空购物车">
+	                <h3>购物车为空</h3>
+	                <p>您的购物车空空如也</p>
+	                <a href="index.html" class="btn">去挑选游戏</a>
+	            </div>
+	
+	            <!-- 商品列表容器 -->
+	            <h1 class="cart-header">您的购物车</h1>
+	            <div class="cart-items"></div>
+	            
+	            <!-- 总价显示 -->
+	            <div class="cart-total">
+	                <h3>总计：¥ 0.00</h3>
+	                <a href="payment.html" class="checkout-btn">前往结算 </a>
+	            </div>
+	        </div>
+	    </div>
+		
     <footer>
         <div class="footer-content">
             <div class="footer-section">
                 <h4>关于我们</h4>
-                <a href="#">制作人员名单</a>
+                <a href="about.html">联系我们</a>
+                <a href="team.html">制作人员名单</a>
             </div>
             <div class="footer-section">
                 <h4>客户服务</h4>
-                <a href="#">帮助中心</a>
-                <a href="#">常见问题</a>
+                <a href="https://www.deepseek.com/">帮助中心</a>
+                <a href="question.html">常见问题</a>
             </div>
             <div class="footer-section">
                 <h4>法律条款</h4>
-                <a href="#">隐私政策</a>
-                <a href="#">用户协议</a>
+                <a href=#>隐私政策</a>
+                <a href=#>用户协议</a>
             </div>
             <div class="footer-section">
                 <h4>关注我们</h4>
-                <a href="#">QQ</a>
-                <a href="#">微信</a>
-                <a href="#">GitHub</a>
+                <a href="qq.jpg" title="qq">QQ</a>
+                <a href="weixin.jpg" title="微信">微信</a>
+                <a href="https://github.com" target="_blank">GitHub</a>
             </div>
         </div>
     </footer>
+    <!-- 同主页页脚 -->
 
-    <script src="../assets/js/main.js"></script>
+    <script src="main.js"></script>
 </body>
 </html>
