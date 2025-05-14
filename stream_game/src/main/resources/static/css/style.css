@@ -10,6 +10,12 @@ body {
     background: #1b2838;
     color: #c6d4df;
     line-height: 1.6;
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+}
+
+body.fade-out {
+    opacity: 0;
 }
 
 /* 导航栏 */
@@ -42,7 +48,7 @@ body {
 .nav-links {
     display: flex;
     gap: 25px;
-    margin-left: auto;
+	margin-left: auto;
 }
 
 .nav-links a {
@@ -54,7 +60,7 @@ body {
 }
 
 .nav-links a:hover,
-.nav-links .active {
+.nav-links a.active {
     color: #fff;
 }
 
@@ -65,13 +71,32 @@ body {
     left: 0;
     width: 0;
     height: 2px;
-    background: #a1cd44;
+    background: #a1cd44;/*#66c0f4*/
     transition: width 0.3s ease;
 }
 
 .nav-links a:hover::after,
 .nav-links .active::after {
     width: 100%;
+}
+
+@media (max-width: 768px) {
+    .nav-content {
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    
+    .search-container {
+        order: 3;
+        flex: 1 0 100%;
+        margin: 10px 0 0 0;
+        max-width: 100%;
+    }
+    
+    .nav-links {
+        order: 2;
+        margin-left: 0;
+    }
 }
 
 /* 新增搜索框样式 */
@@ -175,11 +200,13 @@ body {
 .slide-content h2 {
     font-size: 3rem;
     margin-bottom: 20px;
+    animation: slideInLeft 0.8s ease;
 }
 
 .slide-content p {
     font-size: 1.2rem;
     margin-bottom: 30px;
+    animation: slideInLeft 1s ease;
 }
 
 .slide-btn {
@@ -191,6 +218,7 @@ body {
     border-radius: 25px;
     font-weight: bold;
     transition: all 0.3s ease;
+    animation: fadeInUp 1s ease;
 }
 
 .slide-btn:hover {
@@ -244,195 +272,37 @@ body {
 }
 
 .indicator.active {
-    width: 30px;
-    border-radius: 6px;
     background: #66c0f4;
+    transform: scale(1.3);
 }
 
-/* 主体内容容器 */
-.container {
-    max-width: 1200px;
-    margin: 100px auto 40px;
-    padding: 0 20px;
+/* 动画 */
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
-/* 页脚 */
-footer {
-    background: #171a21;
-    padding: 40px 0;
-    margin-top: 60px;
-}
-
-.footer-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 30px;
-    padding: 0 20px;
-}
-
-.footer-section h4 {
-    color: #fff;
-    margin-bottom: 15px;
-    font-size: 18px;
-    font-weight: normal;
-}
-
-.footer-section a {
-    display: block;
-    color: #b8b6b4;
-    margin-bottom: 10px;
-    font-size: 14px;
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.footer-section a:hover {
-    color: #66c0f4;
-}
-
-/* 游戏网格布局 */
-.game-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-    gap: 30px;
-    padding: 20px 0;
-}
-
-.game-card {
-    background: #1e2837;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
-}
-
-.game-image {
-    width: 100%;
-    height: 150px;
-    object-fit: cover;
-    transition: all 0.5s ease;
-}
-
-.game-card:hover .game-image {
-    transform: scale(1.05);
-}
-
-.game-info {
-    padding: 15px;
-}
-
-.game-title {
-    color: #fff;
-    font-size: 18px;
-    margin-bottom: 10px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.game-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.rating {
-    color: #ffd700;
-    font-size: 14px;
-}
-
-.rating span:last-child {
-    color: #b8b6b4;
-    margin-left: 5px;
-}
-
-.price {
-    color: #a1cd44;
-    font-size: 18px;
-    font-weight: bold;
-}
-
-.buy-btn {
-    background: #1a9fff;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    width: 100%;
-    border-radius: 4px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.buy-btn:hover {
-    background: #1285e0;
-    transform: translateY(-2px);
-}
-
-.section-title {
-    color: #fff;
-    font-size: 28px;
-    margin-bottom: 25px;
-    font-weight: normal;
-    position: relative;
-    padding-bottom: 10px;
-}
-
-.section-title::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 80px;
-    height: 3px;
-    background: #66c0f4;
-    border-radius: 3px;
-}
-
-/* 购物车数量指示器 */
-.cart-counter {
-    display: inline-block;
-    background: #a1cd44;
-    color: #000;
-    font-size: 12px;
-    font-weight: bold;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    text-align: center;
-    line-height: 20px;
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* 响应式设计 */
-@media (max-width: 1024px) {
-    .slide-content h2 {
-        font-size: 2.5rem;
-    }
-}
-
 @media (max-width: 768px) {
-    .nav-content {
-        flex-wrap: wrap;
-        gap: 15px;
-    }
-    
-    .search-container {
-        order: 3;
-        flex: 1 0 100%;
-        margin: 10px 0 0 0;
-        max-width: 100%;
-    }
-    
-    .nav-links {
-        order: 2;
-        margin-left: 0;
-    }
-    
     .carousel-container {
-        height: 350px;
+        height: 400px;
     }
     
     .slide-content h2 {
@@ -443,25 +313,588 @@ footer {
         font-size: 1rem;
     }
     
-    .footer-content {
-        grid-template-columns: repeat(2, 1fr);
+    .carousel-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 2rem;
+    }
+}
+/* 主要内容容器 */
+.container {
+    max-width: 1200px;
+    margin: 80px auto 0;
+    padding: 30px 20px;
+    min-height: calc(100vh - 200px);
+}
+
+/* 页脚 */
+footer {
+    background: #171a21;
+    padding: 50px 20px;
+    margin-top: 50px;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+}
+
+.footer-section h4 {
+    color: #fff;
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+
+.footer-section a {
+    color: #8f98a0;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 12px;
+    font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+.footer-section a:hover {
+    color: #66c0f4;
+}
+
+/* 主页样式 */
+.game-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.game-card {
+    background: #1a1a1a;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    animation: cardEntrance 0.6s ease-out forwards;
+    opacity: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes cardEntrance {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
-@media (max-width: 576px) {
-    .carousel-container {
-        height: 300px;
+.game-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.game-image:hover {
+    transform: scale(1.05);
+}
+
+.game-info {
+    padding: 20px;
+}
+
+.game-title {
+    color: #fff;
+    font-size: 16px;
+    margin-bottom: 15px;
+    height: 40px;
+    overflow: hidden;
+}
+
+.game-price {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.price {
+    color: #66c0f4;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.discount {
+    color: #a1cd44;
+    font-size: 14px;
+    text-decoration: line-through;
+    margin-right: 8px;
+}
+
+.buy-btn {
+    background: #66c0f4;
+    color: #fff;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.buy-btn:hover {
+    background: #4f9cbd;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 192, 244, 0.3);
+}
+
+/* 游戏详情页 */
+.game-detail {
+    color: #fff;
+    margin-top: 30px;
+}
+
+.game-banner {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.purchase-box {
+    background: #1a1a1a;
+    padding: 25px 30px;
+    border-radius: 8px;
+    margin: 30px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.game-content {
+    background: #1a1a1a;
+    padding: 30px;
+    border-radius: 8px;
+    line-height: 1.8;
+}
+
+.game-tags {
+    margin: 20px 0;
+}
+
+.game-tag {
+    display: inline-block;
+    background: #66c0f4;
+    color: #fff;
+    padding: 8px 15px;
+    margin: 0 10px 10px 0;
+    border-radius: 20px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.game-tag:hover {
+    transform: rotate(-3deg) scale(1.05);
+    box-shadow: 0 3px 10px rgba(102, 192, 244, 0.3);
+}
+
+.system-requirements {
+    list-style: none;
+    padding: 20px;
+    background: #252525;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.system-requirements li {
+    padding: 8px 0;
+    border-bottom: 1px solid #353535;
+}
+
+/* 购物车页 */
+.cart-container {
+    background: #1a1a1a;
+    padding: 30px;
+    border-radius: 8px;
+}
+
+.cart-header {
+    color: #fff;
+    font-size: 24px;
+    margin-bottom: 30px;
+}
+
+.cart-items {
+    margin-bottom: 30px;
+}
+
+.cart-item {
+    display: flex;
+    align-items: center;
+    background: #252525;
+    padding: 20px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    transition: all 0.4s ease-out;
+}
+
+.cart-item img {
+    width: 120px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 25px;
+}
+
+.item-info {
+    flex-grow: 1;
+}
+
+.item-info h3 {
+    color: #fff;
+    margin-bottom: 8px;
+}
+
+.remove-btn {
+    background: #ff4444;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.remove-btn:hover {
+    background: #cc0000;
+    transform: scale(1.05);
+}
+
+.cart-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px;
+    border-top: 2px solid #353535;
+}
+
+.checkout-btn {
+    background: #66c0f4;
+    color: white;
+    padding: 15px 40px;
+    font-size: 18px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.checkout-btn:hover {
+    background: #4f9cbd;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 192, 244, 0.3);
+}
+
+@keyframes itemRemove {
+    from {
+        opacity: 1;
+        transform: translateX(0);
     }
-    
-    .slide-content h2 {
-        font-size: 1.8rem;
+    to {
+        opacity: 0;
+        transform: translateX(100%);
     }
-    
-    .footer-content {
+}
+
+.cart-item.removing {
+    animation: itemRemove 0.4s ease-out forwards;
+}
+
+.empty-cart {
+    text-align: center;
+    padding: 80px 20px;
+    display: none;
+}
+        
+.empty-cart img {
+    width: 200px;
+    opacity: 0.6;
+    margin-bottom: 30px;
+}
+        
+.empty-cart p {
+    color: #8f98a0;
+    font-size: 18px;
+	margin-bottom: 30px;
+}
+        
+.empty-cart .btn {
+    padding: 12px 40px;
+    font-size: 16px;
+}
+/* 关于页 */
+.about-content {
+    background: #1a1a1a;
+    padding: 40px;
+    border-radius: 8px;
+}
+
+.about-content h1 {
+    color: #fff;
+    margin-bottom: 30px;
+    font-size: 32px;
+}
+
+.contact-info {
+    background: #252525;
+    padding: 25px;
+    border-radius: 8px;
+    margin-top: 30px;
+}
+
+.contact-info h2 {
+    color: #66c0f4;
+    margin-bottom: 15px;
+}
+
+/* 动画 */
+@keyframes cartBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+.cart-counter {
+    display: inline-block;
+    background: #66c0f4;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    margin-left: 5px;
+    animation: cartBounce 0.5s ease;
+}
+
+.loading-bar {
+    height: 3px;
+    background: #66c0f4;
+    position: fixed;
+    top: 0;
+    left: 0;
+    animation: loadingProgress 2s ease-out;
+}
+
+@keyframes loadingProgress {
+    from { width: 0%; }
+    to { width: 90%; }
+}
+
+        /* 游戏库项悬停效果 */
+.library-item {
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.library-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(102,192,244,0.2);
+}
+
+/* 图表容器 */
+.playtime-chart {
+    background: #252525;
+    border-radius: 8px;
+    padding: 20px;
+    height: 400px;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .profile-container {
         grid-template-columns: 1fr;
     }
     
-    .game-grid {
-        grid-template-columns: 1fr;
+    .sidebar {
+        display: flex;
+        overflow-x: auto;
+        gap: 10px;
     }
-} 
+    
+    .nav-item {
+        white-space: nowrap;
+    }
+}
+
+ /* 新增上传页面专用样式 */
+        .upload-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            border-radius: 8px;
+        }
+
+        .upload-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #b8b6b4;
+            font-weight: bold;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            background: #323232;
+            border: 1px solid #4a4a4a;
+            color: white;
+            border-radius: 4px;
+        }
+
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .tag-input {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .preview-image {
+            max-width: 400px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+        #requirements-container div {
+            margin-bottom: 15px;
+        }
+
+        .form-submit {
+            grid-column: 1 / -1;
+            text-align: center;
+        }
+
+        #submit-btn {
+            padding: 15px 50px;
+            font-size: 18px;
+            background: #0078f2;
+            transition: background 0.3s;
+        }
+
+        #submit-btn:hover {
+            background: #0060c0;
+        }
+		
+/* 支付成功按钮样式 */
+.slide-btn {
+    display: inline-block;
+    padding: 12px 35px;
+    background: #a1cd44;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.slide-btn:hover {
+    transform: translateY(-3px);
+    background: #8ab434;
+}
+/* 支付页面新增样式 */
+.order-items-container {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.order-item {
+    padding: 12px;
+    background: #252525;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    transition: transform 0.2s ease;
+}
+
+.order-item:hover {
+    transform: translateX(5px);
+}
+
+.item-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.item-index {
+    color: #66c0f4;
+    font-weight: bold;
+    min-width: 25px;
+}
+
+.item-title {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.item-price {
+    color: #a1cd44;
+    font-weight: bold;
+}
+
+.total-amount {
+    font-size: 1.5rem;
+    color: #66c0f4;
+    text-align: right;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid #353535;
+}
+
+.empty-cart {
+    text-align: center;
+    color: #8f98a0;
+    padding: 40px 0;
+}
+
+/* 上传游戏专区 */
+.user-upload-section {
+    margin: 40px 0;
+    padding: 20px;
+    background: #1a1a1a;
+}
+
+#userGamesContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 15px;
+}
+
+.empty-tip {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #666;
+    padding: 50px 0;
+}
