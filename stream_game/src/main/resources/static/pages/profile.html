@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>个人中心 - Stream</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="style.css">
     <style>
         /* 新增个人中心特有样式 */
         .profile-container {
@@ -172,7 +172,7 @@
         </div>
     </div>
 
-    <script src="../assets/js/main.js"></script>
+    <script src="main.js"></script>
     <script>
         // 全局API基础URL
         const API_BASE_URL = 'http://localhost:8080/api';
@@ -180,9 +180,8 @@
         // 页面初始化逻辑
         document.addEventListener('DOMContentLoaded', () => {
             // 登录状态检查
-            const currentUser = JSON.parse(sessionStorage.getItem('currentPlayer'));
-            if (!currentUser) window.location.href = 'login.html';
-
+            const currentUser = JSON.parse(localStorage.getItem('currentPlayer'));
+            
             // 导航切换
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.addEventListener('click', function(e) {
@@ -194,52 +193,201 @@
                 });
             });
 
-            // 加载游戏库
-            loadGameLibrary(currentUser.id);
-            loadProfileInfo(currentUser);
+            // 检查用户是否登录，若登录则加载数据，否则显示提示信息
+            if (currentUser) {
+                // 用户已登录，加载游戏库和个人信息
+                loadGameLibrary(currentUser.playerId);
+                loadProfileInfo(currentUser);
+                
+                // 显示用户数据
+                document.querySelectorAll('.content-section').forEach(section => {
+                    section.style.display = section.classList.contains('active') ? 'block' : 'none';
+                });
+            } else {
+                // 用户未登录，显示提示信息
+                document.querySelectorAll('.content-section').forEach(section => {
+                    section.style.display = 'none';
+                });
+                
+                // 创建提示信息
+                const loginPrompt = document.createElement('div');
+                loginPrompt.className = 'login-prompt';
+                loginPrompt.innerHTML = `
+                    <div style="background: #1a1a1a; border-radius: 8px; padding: 30px; text-align: center;">
+                        <h2>请先登录</h2>
+                        <p>您需要登录才能查看个人中心内容</p>
+                        <a href="login.html" class="btn" style="display: inline-block; margin-top: 20px; padding: 10px 20px; background: #66c0f4; color: #fff; border-radius: 4px; text-decoration: none;">前往登录</a>
+                    </div>
+                `;
+                document.querySelector('.content-container').appendChild(loginPrompt);
+            }
         });
 
         // 加载游戏库数据
         async function loadGameLibrary(userId) {
             try {
-                const response = await fetch(`${API_BASE_URL}/library/${userId}`);
+                const response = await fetch(`${API_BASE_URL}/library/${userId}/games`);
+                if (!response.ok) {
+                    throw new Error('获取游戏库数据失败');
+                }
                 const libraryData = await response.json();
                 
                 const container = document.getElementById('game-library');
+                if (libraryData.length === 0) {
+                    container.innerHTML = '<p>您的游戏库还没有游戏，快去商城挑选游戏吧！</p>';
+                    return;
+                }
+                
                 container.innerHTML = libraryData.map(game => `
                     <div class="library-item">
-                        <img src="${game.cover}" alt="${game.title}" style="width:100%; height:120px; object-fit:cover;">
-                        <div class="playtime">已玩 ${formatPlaytime(game.playtime)}</div>
+                        <img src="../assets/images/games/${game.game.gameId}.jpg" alt="${game.game.title}" style="width:100%; height:120px; object-fit:cover;">
+                        <div class="playtime">已玩 ${formatPlaytime(game.playTimeMinutes)}</div>
                     </div>
                 `).join('');
             } catch (error) {
                 console.error('加载游戏库失败:', error);
+                document.getElementById('game-library').innerHTML = '<p>加载游戏库失败，请稍后重试</p>';
             }
         }
 
         // 格式化游戏时长
         function formatPlaytime(minutes) {
+            if (!minutes) return '0 分钟';
             const hours = Math.floor(minutes / 60);
-            return hours > 0 ? `${hours} 小时` : `${minutes} 分钟`;
+            const mins = minutes % 60;
+            return hours > 0 ? `${hours} 小时 ${mins} 分钟` : `${minutes} 分钟`;
         }
 
         // 加载个人信息
         async function loadProfileInfo(user) {
             try {
-                const response = await fetch(`${API_BASE_URL}/players/id/${user.id}`);
-                const profileData = await response.json();
+                document.getElementById('profile-username').value = user.username;
+                document.getElementById('profile-email').value = user.email;
                 
-                document.getElementById('profile-username').value = profileData.username;
-                document.getElementById('profile-email').value = profileData.email;
+                // 加载游戏时长统计
+                const playtimeResponse = await fetch(`${API_BASE_URL}/library/${user.playerId}/most-played`);
+                if (playtimeResponse.ok) {
+                    const playtimeData = await playtimeResponse.json();
+                    const playtimeChart = document.getElementById('playtime-chart');
+                    
+                    if (playtimeData.length === 0) {
+                        playtimeChart.innerHTML = '<p>您还没有游戏时长记录</p>';
+                    } else {
+                        playtimeChart.innerHTML = playtimeData.map(game => `
+                            <div class="playtime-item" style="margin-bottom: 15px; padding: 10px; background: #252525; border-radius: 5px;">
+                                <div style="display: flex; align-items: center;">
+                                    <img src="../assets/images/games/${game.game.gameId}.jpg" alt="${game.game.title}" style="width: 80px; height: 45px; object-fit: cover; margin-right: 15px;">
+                                    <div>
+                                        <h4 style="margin: 0 0 5px 0;">${game.game.title}</h4>
+                                        <div style="height: 20px; background: #1a1a1a; width: 300px; border-radius: 10px; overflow: hidden;">
+                                            <div style="height: 100%; background: #66c0f4; width: ${Math.min(100, game.playTimeMinutes/10)}%"></div>
+                                        </div>
+                                        <p style="margin: 5px 0 0 0;">${formatPlaytime(game.playTimeMinutes)}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                }
             } catch (error) {
                 console.error('加载个人信息失败:', error);
             }
         }
 
-        // 退出登录
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            sessionStorage.removeItem('currentPlayer');
-            window.location.href = 'login.html';
+        // 处理个人信息表单提交
+        document.getElementById('profile-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const currentUser = JSON.parse(localStorage.getItem('currentPlayer'));
+            if (!currentUser) {
+                alert('请先登录');
+                return;
+            }
+            
+            const email = document.getElementById('profile-email').value;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/players/id/${currentUser.playerId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('更新个人信息失败');
+                }
+                
+                alert('个人信息更新成功');
+                const updatedUser = await response.json();
+                localStorage.setItem('currentPlayer', JSON.stringify(updatedUser));
+            } catch (error) {
+                console.error('更新个人信息失败:', error);
+                alert('更新个人信息失败: ' + error.message);
+            }
+        });
+        
+        // 处理修改密码表单提交
+        document.getElementById('security-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const currentUser = JSON.parse(localStorage.getItem('currentPlayer'));
+            if (!currentUser) {
+                alert('请先登录');
+                return;
+            }
+            
+            const formElements = this.elements;
+            const currentPassword = formElements[0].value;
+            const newPassword = formElements[1].value;
+            const confirmPassword = formElements[2].value;
+            
+            if (newPassword !== confirmPassword) {
+                alert('两次输入的新密码不一致');
+                return;
+            }
+            
+            try {
+                // 先验证当前密码
+                const loginResponse = await fetch(`${API_BASE_URL}/players/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: currentUser.username,
+                        password: currentPassword
+                    })
+                });
+                
+                if (!loginResponse.ok) {
+                    alert('当前密码不正确');
+                    return;
+                }
+                
+                // 更新密码
+                const updateResponse = await fetch(`${API_BASE_URL}/players/id/${currentUser.playerId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        password: newPassword
+                    })
+                });
+                
+                if (!updateResponse.ok) {
+                    throw new Error('修改密码失败');
+                }
+                
+                alert('密码修改成功，请重新登录');
+                localStorage.removeItem('currentPlayer');
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error('修改密码失败:', error);
+                alert('修改密码失败: ' + error.message);
+            }
         });
     </script>
 </body>
